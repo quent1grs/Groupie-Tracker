@@ -1,14 +1,12 @@
-package main
+package database
 
 import (
 	"database/sql"
 	"fmt"
 	"log"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
+func Database() {
 	user_id := 0
 	db, err := sql.Open("sqlite3", "./db.sqlite")
 	if err != nil {
@@ -67,7 +65,7 @@ func main() {
 
 func register(db *sql.DB, id int) {
 	if id > 1 {
-		id = id - 1
+		id = -1
 	}
 	pseudo := ""
 	email := ""
