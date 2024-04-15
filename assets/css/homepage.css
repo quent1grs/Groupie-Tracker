@@ -15,7 +15,7 @@ login-signup {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px; /* Adjust as needed */
+  margin-bottom: 20px; 
 }
 
 #bg-video {
@@ -43,12 +43,53 @@ login-signup {
   color: #ffeba7;
 }
 
-a {
+
+
+
+#logemail,
+#logpass{
+    margin-top: 5px;
+}
+
+#loginh4{
+    bottom: 40px;
+    position:relative;
+}
+
+#signuph4{
+    margin-bottom: 15px;
+}
+
+#Forgot{
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 125px;
+}
+
+#signsubmit{
     cursor: pointer;
-    position: fixed;
+    position: absolute;
     transition: all 200ms linear;
     margin-left: 125px;
     margin-top: 25px;
+}
+
+#signemail,
+#signpass,
+#logname,
+#confirmpass {
+    width: 68%; 
+    height: 30px;
+    position: relative;
+    margin-top: 5px;
+}
+
+#logsubmit{
+    cursor: pointer;
+    position: absolute;
+    transition: all 200ms linear;
+    margin-left: 125px;
+    margin-top: 35px;
 }
 
 a:hover {
@@ -74,6 +115,8 @@ p {
 
 h4 {
     font-weight: 600;
+    margin: 0 auto;
+    padding-left: 150px;
 }
 
 h6 span:first-child{
@@ -174,7 +217,6 @@ h6 span:last-child{
     width: 100%;
     height: 100%;
     background-color: #2a2b38;
-    background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg');
     background-position: bottom center;
     background-repeat: no-repeat;
     background-size: 300%;
