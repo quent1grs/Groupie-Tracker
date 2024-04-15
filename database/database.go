@@ -8,7 +8,7 @@ import (
 
 func Database() {
 	user_id := 0
-	db, err := sql.Open("sqlite3", "./db.sqlite")
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
 	if err != nil {
 		log.Fatal(err)
 	}
