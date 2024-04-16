@@ -127,10 +127,15 @@ func deleteAllUsers(db *sql.DB) {
 type Track struct {
 	Name    string   `json:"name"`
 	Artists []Artist `json:"artists"`
+	Genre   []Genre  `json:"genre"`
 }
 
 type Item struct {
 	Track Track `json:"track"`
+}
+
+type Genre struct {
+	Genre []Genre `json:"genre"`
 }
 
 type Artist struct {
@@ -143,7 +148,7 @@ type SearchResponse struct {
 	} `json:"tracks"`
 }
 
-func GetAlbum(url string, token string) {
+func GetPlaylist(url string, token string) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -167,7 +172,7 @@ func GetAlbum(url string, token string) {
 }
 
 func printTitle(body []byte, err error) {
-	fmt.Println("Albums		|	Artists")
+	fmt.Println("Title		|	Artists")
 	var searchResponse SearchResponse
 	err = json.Unmarshal(body, &searchResponse)
 	if err != nil {

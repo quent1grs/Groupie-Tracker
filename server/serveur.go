@@ -15,7 +15,7 @@ import (
 func main() {
 	token := getToken()
 	database.Database()
-	database.GetAlbum("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X", token)
+	database.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X", token)
 
 }
 
