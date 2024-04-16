@@ -3,20 +3,64 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"groupietracker/database"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var PORT = "8080"
+var HOST = ""
+var addr = flag.String("addr", HOST+":"+PORT, "http service address")
+
 func main() {
+	fmt.Println("Launching server.")
+	fmt.Println("Current server address: " + *addr)
+	fs := http.FileServer(http.Dir("./assets"))
+	if fs == nil {
+		log.Fatal("File server not found.")
+	} else {
+		log.Printf("File server found.")
+	}
+
+	// Code issu de la démo de chat. À conserver pour le chat global.
+	// hub := newHub()
+	// go hub.run()
+	// http.HandleFunc("/ws", func(w http.ResponseWriter, rhttp.Request) {
+	//     serveWs(hub, w, r)
+	// })
+
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
+	http.HandleFunc("/", handleHome)
+	// TODO : Routes à ajouter
+
+	server := &http.Server{
+		Addr:              *addr,
+		Handler:           nil,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	// Démarrage du serveur
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+	log.Printf("Server listening at " + *addr)
+	log.Fatal(server.ListenAndServe())
+
 	token := getToken()
 	database.Database()
 	database.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X", token)
 
+	fmt.Println("Server launched.")
 }
 
 func getToken() string {
@@ -38,4 +82,8 @@ func getToken() string {
 	json.Unmarshal(body, &result)
 
 	return result["access_token"].(string)
+}
+
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./home-page.html")
 }
