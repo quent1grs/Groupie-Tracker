@@ -43,8 +43,13 @@ login-signup {
   color: #ffeba7;
 }
 
-
-
+.textCard {
+    display: flex;
+    justify-content: space-between;
+    width: 230px;
+    transform: translateY(175px);
+    margin-left: 110px;
+}
 
 #logemail,
 #logpass{
@@ -373,11 +378,11 @@ h6 span:last-child{
     -ms-flex-pack: center;
     text-align: center;
     border: none;
-    background-color: #ffeba7;
+    background-color: #e2bf4c;
     color: #102770;
     box-shadow: 0 8px 24px 0 rgba(255, 235, 167, .2);
 }
-
+ 
 .btn:active,
 .btn:focus {
     background-color: #102770;
