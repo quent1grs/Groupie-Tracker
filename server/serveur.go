@@ -13,12 +13,19 @@ import (
 	"strings"
 	"time"
 
+	user "groupietracker/server/user"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// DEF CONFIGURABLES
 var PORT = "8080"
 var HOST = ""
 var addr = flag.String("addr", HOST+":"+PORT, "http service address")
+
+// ENDEF CONFIGURABLES
+
+var loggedUsers = make(map[string]user.User)
 
 func main() {
 	fmt.Println("Launching server.")

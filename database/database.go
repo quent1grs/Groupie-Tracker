@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	user "groupietracker/server/user"
 	"io"
 	"log"
 	"net/http"
@@ -83,16 +84,21 @@ func register(db *sql.DB, id int) {
 
 	id++
 
-	stmt, err := db.Prepare("INSERT INTO USER(id, pseudo, email, password) VALUES(?, ?, ?, ?)")
+	// Version 1 :
+	user.CreateUser(db, id, pseudo, password, email)
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = stmt.Exec(id, pseudo, email, password)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Version 2 :
+	// createUser(id, pseudo, password, email)
+	//
+	// Dans user.go :
+	// stmt, err := db.Prepare("INSERT INTO USER(id, pseudo, email, password) VALUES(?, ?, ?, ?)")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// _, err = stmt.Exec(user.id, user.pseudo, user.email, user.password)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func getNextID(db *sql.DB) (int, error) {
@@ -125,9 +131,10 @@ func deleteAllUsers(db *sql.DB) {
 }
 
 type Track struct {
-	Name    string   `json:"name"`
-	Artists []Artist `json:"artists"`
-	Genre   []Genre  `json:"genre"`
+	Name     string   `json:"name"`
+	Artists  []Artist `json:"artists"`
+	Genre    []Genre  `json:"genre"`
+	Duration int      `json:"duration_ms"`
 }
 
 type Item struct {
@@ -146,6 +153,10 @@ type SearchResponse struct {
 	Tracks struct {
 		Items []Item `json:"items"`
 	} `json:"tracks"`
+}
+
+type duration_ms struct {
+	Duration int `json:"duration_ms"`
 }
 
 func GetPlaylist(url string, token string) {
