@@ -3,7 +3,9 @@ package user
 import (
 	"database/sql"
 	"encoding/base64"
+	"groupietracker/database"
 	"log"
+	"net/http"
 )
 
 type User struct {
@@ -17,17 +19,34 @@ type User struct {
 }
 
 // Ajout d'un utilisateur à la base de données
-func CreateUser(db *sql.DB, id int, pseudo string, password string, email string) {
-	stmt, err := db.Prepare("INSERT INTO USER(id, pseudo, email, password) VALUES(?, ?, ?, ?)")
+func HandleSignup(w http.ResponseWriter, r *http.Request) {
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = stmt.Exec(id, pseudo, email, password)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
 
-	if err != nil {
-		log.Fatal(err)
 	}
+	// Récupérer les données du formulaire depuis la requête HTTP
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
+		return
+	}
+	email := r.FormValue("signname")
+	password := r.FormValue("signemail")
+	username := r.FormValue("signpass")
+
+	// Insérer les données dans la base de données en appelant la fonction existante
+	err = database.InsertFormData(email, password, username)
+	if err != nil {
+		http.Error(w, "Erreur lors de l'insertion des données dans la base de données", http.StatusInternalServerError)
+		return
+	}
+	//Actualiser la page en renvoyant le même fichier HTML
+	http.ServeFile(w, r, "./home-page.html")
+}
+
+func HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(db *sql.DB, id int, pseudo string, password string, email string) {

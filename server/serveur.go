@@ -28,6 +28,7 @@ var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 var loggedUsers = make(map[string]user.User)
 
 func main() {
+
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
 	fs := http.FileServer(http.Dir("./assets"))
@@ -45,6 +46,9 @@ func main() {
 	// })
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	http.HandleFunc("/signup", user.HandleSignup)
+
+	http.HandleFunc("/login", user.HandleLogin)
 
 	http.HandleFunc("/", handleHome)
 	// TODO : Routes à ajouter

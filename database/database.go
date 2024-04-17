@@ -4,101 +4,142 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	user "groupietracker/server/user"
 	"io"
 	"log"
 	"net/http"
 )
 
 func Database() {
-	user_id := 0
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	// user_id := 0
+	db, err := sql.Open("sqlite3", "/Users/quentingros/Desktop/Groupie-Tracker/database/db.sqlite")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
-
+	GetUsers(db)
 	isEmpty, err := isUserTableEmpty(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if isEmpty {
-		user_id = 0
+		// user_id = 0
 	} else {
-		user_id, err = getNextID(db)
+		// user_id, err = getNextID(db)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 	}
+}
 
-	fmt.Println("do you want to register ? (y/n)")
-	var response string
-	fmt.Scanln(&response)
+// 	fmt.Println("do you want to register ? (y/n)")
+// 	var response string
+// 	fmt.Scanln(&response)
 
-	if response == "y" {
-		register(db, user_id)
+// 	if response == "y" {
+// 		register(db, user_id)
+// 	}
+
+// 	fmt.Println("do you want to delete all users ? (y/n)")
+// 	fmt.Scanln(&response)
+
+// 	if response == "y" {
+// 		deleteAllUsers(db)
+// 	}
+
+// 	rows, err := db.Query("SELECT * FROM USER")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	defer rows.Close()
+
+// 	for rows.Next() {
+// 		var id int
+// 		var pseudo string
+// 		var email string
+// 		var password string
+// 		err = rows.Scan(&id, &pseudo, &email, &password)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		fmt.Println(id, pseudo, email, password)
+// 	}
+// }
+
+// InsertFormData insère les données du formulaire dans la base de données
+func InsertFormData(username, email, password string) error {
+	// Ouverture de la connexion à la base de données
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		return fmt.Errorf("erreur lors de l'ouverture de la base de données: %v", err)
 	}
 
-	fmt.Println("do you want to delete all users ? (y/n)")
-	fmt.Scanln(&response)
+	// Préparation de la requête d'insertion
+	stmt, err := db.Prepare("INSERT INTO USER(username, email, password) VALUES (?, ?, ?)")
+	if err != nil {
+		return fmt.Errorf("erreur lors de la préparation de la requête d'insertion: %v", err)
+	}
+	defer stmt.Close()
 
-	if response == "y" {
-		deleteAllUsers(db)
+	// Exécution de la requête d'insertion avec les valeurs du formulaire
+	_, err = stmt.Exec(username, email, password)
+	if err != nil {
+		return fmt.Errorf("erreur lors de l'insertion dans la base de données: %v", err)
 	}
 
-	rows, err := db.Query("SELECT * FROM USER")
+	fmt.Println("Données du formulaire insérées avec succès dans la base de données.")
+	db.Close()
+	return nil
+
+}
+
+// func register(db *sql.DB, id int) {
+// 	if id > 1 {
+// 		id = -1
+// 	}
+// 	pseudo := ""
+// 	email := ""
+// 	password := ""
+
+// 	fmt.Println("Enter your pseudo: ")
+// 	fmt.Scanln(&pseudo)
+// 	fmt.Println("Enter your email: ")
+// 	fmt.Scanln(&email)
+// 	fmt.Println("Enter your password: ")
+// 	fmt.Scanln(&password)
+
+// 	id++
+// }
+
+func GetUsers(db *sql.DB) {
+	// Préparation de la requête SQL
+	rows, err := db.Query("SELECT id, username, email, password FROM USER")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
+	// Parcours des lignes de résultat
 	for rows.Next() {
 		var id int
-		var pseudo string
-		var email string
-		var password string
-		err = rows.Scan(&id, &pseudo, &email, &password)
+		var username, email, password string
+
+		// Scan des colonnes dans les variables
+		err = rows.Scan(&id, &username, &email, &password)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(id, pseudo, email, password)
+
+		// Affichage des données
+		fmt.Println(id, username, email, password)
 	}
-}
 
-func register(db *sql.DB, id int) {
-	if id > 1 {
-		id = -1
+	// Vérification d'erreurs après avoir parcouru les lignes
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
 	}
-	pseudo := ""
-	email := ""
-	password := ""
-
-	fmt.Println("Enter your pseudo: ")
-	fmt.Scanln(&pseudo)
-	fmt.Println("Enter your email: ")
-	fmt.Scanln(&email)
-	fmt.Println("Enter your password: ")
-	fmt.Scanln(&password)
-
-	id++
-
-	// Version 1 :
-	user.CreateUser(db, id, pseudo, password, email)
-
-	// Version 2 :
-	// createUser(id, pseudo, password, email)
-	//
-	// Dans user.go :
-	// stmt, err := db.Prepare("INSERT INTO USER(id, pseudo, email, password) VALUES(?, ?, ?, ?)")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// _, err = stmt.Exec(user.id, user.pseudo, user.email, user.password)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 }
 
 func getNextID(db *sql.DB) (int, error) {
