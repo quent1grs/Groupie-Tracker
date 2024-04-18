@@ -83,7 +83,7 @@ func InsertFormData(username, email, password string) error {
 	defer stmt.Close()
 
 	// Exécution de la requête d'insertion avec les valeurs du formulaire
-	_, err = stmt.Exec(username, email, password)
+	_, err = stmt.Exec(password, username, email)
 	if err != nil {
 		return fmt.Errorf("erreur lors de l'insertion dans la base de données: %v", err)
 	}

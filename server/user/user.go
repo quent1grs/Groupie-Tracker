@@ -32,12 +32,12 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
 		return
 	}
-	email := r.FormValue("signname")
-	password := r.FormValue("signemail")
-	username := r.FormValue("signpass")
+	username := r.FormValue("signname")
+	email := r.FormValue("signemail")
+	password := r.FormValue("signpass")
 
 	// Insérer les données dans la base de données en appelant la fonction existante
-	err = database.InsertFormData(email, password, username)
+	err = database.InsertFormData(username, email, password)
 	if err != nil {
 		http.Error(w, "Erreur lors de l'insertion des données dans la base de données", http.StatusInternalServerError)
 		return
@@ -49,13 +49,13 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
-func UpdateUser(db *sql.DB, id int, pseudo string, password string, email string) {
-	stmt, err := db.Prepare("UPDATE USER SET pseudo = ?, email = ?, password = ? WHERE id = ?")
+func UpdateUser(db *sql.DB, id int, username string, email string, password string) {
+	stmt, err := db.Prepare("UPDATE USER SET username = ?, email = ?, password = ? WHERE id = ?")
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = stmt.Exec(pseudo, email, password, id)
+	_, err = stmt.Exec(username, email, password, id)
 
 	if err != nil {
 		log.Fatal(err)
