@@ -4,11 +4,8 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 )
 
 func Database() {
@@ -176,74 +173,5 @@ func deleteAllUsers(db *sql.DB) {
 	_, err = stmt.Exec()
 	if err != nil {
 		log.Fatal(err)
-	}
-}
-
-type Track struct {
-	Name     string   `json:"name"`
-	Artists  []Artist `json:"artists"`
-	Genre    []Genre  `json:"genre"`
-	Duration int      `json:"duration_ms"`
-}
-
-type Item struct {
-	Track Track `json:"track"`
-}
-
-type Genre struct {
-	Genre []Genre `json:"genre"`
-}
-
-type Artist struct {
-	Name string `json:"name"`
-}
-
-type SearchResponse struct {
-	Tracks struct {
-		Items []Item `json:"items"`
-	} `json:"tracks"`
-}
-
-type duration_ms struct {
-	Duration int `json:"duration_ms"`
-}
-
-func GetPlaylist(url string, token string) {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	req.Header.Add("Authorization", "Bearer "+token)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	printTitle(body, err)
-}
-
-func printTitle(body []byte, err error) {
-	fmt.Println("Title		|	Artists")
-	var searchResponse SearchResponse
-	err = json.Unmarshal(body, &searchResponse)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, item := range searchResponse.Tracks.Items {
-		fmt.Print(item.Track.Name + "	| ")
-		for _, artist := range item.Track.Artists {
-			fmt.Print(artist.Name, ", ")
-		}
-		fmt.Println()
 	}
 }

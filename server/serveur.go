@@ -10,10 +10,12 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 	"time"
 
 	user "groupietracker/server/user"
+	spotifyapi "groupietracker/spotifyApi"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -25,9 +27,32 @@ var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 
 // ENDEF CONFIGURABLES
 
+type PageData struct {
+	URL string
+}
+
 // var loggedUsers = make(map[string]user.User)
 
 func main() {
+	musicUrl := []string{}
+
+	token := getToken()
+	body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/19DELLlODoh9m2ymmizfS2", token)
+
+	var playlist spotifyapi.SearchResponse
+	err := json.Unmarshal(body, &playlist)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, item := range playlist.Tracks.Items {
+		uri := path.Base(item.Track.ExternalUrls.Spotify)
+		musicUrl = append(musicUrl, uri)
+	}
+	// data: variable à passer à la page HTML pour la musique
+	// data := PageData{
+	// 	URL: musicUrl[rand.Intn(len(musicUrl))],
+	// }
 
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
@@ -58,16 +83,14 @@ func main() {
 	}
 
 	// Démarrage du serveur
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 	log.Printf("Server listening at " + *addr)
 	log.Fatal(server.ListenAndServe())
 
-	token := getToken()
 	database.Database()
-	database.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X", token)
 
 	fmt.Println("Server launched.")
 }
