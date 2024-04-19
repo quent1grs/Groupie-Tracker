@@ -79,10 +79,16 @@ login-signup {
     margin-top: 25px;
 }
 
+#signpass2{
+    width: 68%; 
+    height: 30px;
+    position: relative;
+    margin-top: 5px;
+}
+
 #signemail,
 #signpass,
-#logname,
-#confirmpass {
+#signname{
     width: 68%; 
     height: 30px;
     position: relative;
