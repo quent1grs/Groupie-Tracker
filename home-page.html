@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Homepage</title>
         <link rel="stylesheet" href="assets/css/homepage.css">
+    </head>    
     <body>
         <div class="esection">
             <div class="container">
@@ -16,11 +17,7 @@
                               </video>
                               
                             <input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
-                                
                                 <label class="" for="reg-log"> </label>
-                                
-                                
-                            
                             <div class="card-3d-wrap mx-auto">
                                 <div class="textCard">
                                     <p>log in</p>
@@ -31,18 +28,18 @@
                                         <div class="center-wrap">
                                             <div class="section text-center">
                                                 <h4 id="loginh4" class="mb-4 pb-3">Log In</h4>
-                                                <form action="/login" method="POST"></form>
+                                                <form action="/login" method="POST">
                                                     <div class="form-group">
-                                                        <input type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail" autocomplete="off">
+                                                        <input type="text" name="logemail/logname" class="form-style" placeholder="Your Email / Username" id="logemail" autocomplete="off" required>
                                                         <i class="input-icon uil uil-at"></i>
                                                     </div>  
                                                     <div class="form-group mt-2">
-                                                         <input type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass" autocomplete="off">
+                                                         <input type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass" autocomplete="off" required>
                                                          <i class="input-icon uil uil-lock-alt"></i>
                                                     </div>     
-                                                    <a href="#" id="logsubmit" class="btn mt-4">submit</a>
+                                                    <button type="submit" id="logsubmit" class="btn mt-4">Log In</button>                                   
+                                                    <p id="Forgot" class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your password?</a></p>
                                                 </form>
-                                                <p id="Forgot" class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your password?</a></p>
                                             </div>
                                         </div>
                                     </div>
@@ -52,22 +49,23 @@
                                                 <h4 id="signuph4" class="mb-4 pb-3">Sign Up</h4>
                                                 <form action="/signup" method="POST">
                                                     <div class="form-group">
-                                                        <input type="text" name="signname" class="form-style" placeholder="Username" id="signname" autocomplete="off">
+                                                        <input type="text" name="signname" class="form-style" placeholder="Username"  id="signname" autocomplete="off" required>
                                                          <i class="input-icon uil uil-user"></i>
                                                     </div>  
                                                     <div class="form-group mt-2">
-                                                         <input type="email" name="signemail" class="form-style" placeholder="Your Email" id="signemail" autocomplete="off">
+                                                         <input type="email" name="signemail" class="form-style" placeholder="Your Email" id="signemail" autocomplete="off" required>
                                                         <i class="input-icon uil uil-at"></i>
                                                     </div>  
                                                     <div class="form-group mt-2">
-                                                        <input type="password" name="signpass" class="form-style" placeholder="Your Password" id="signpass" autocomplete="off">
+                                                        <input type="password" name="signpass" class="form-style" placeholder="Your Password" minlength="12" id="signpass" autocomplete="off" required>
                                                         <i class="input-icon uil uil-lock-alt"></i>
                                                     </div>
                                                     <div class="form-group mt-2">
-                                                         <input type="password" name="signpass2" class="form-style" placeholder="Confirmation Password" id="confirmpass" autocomplete="off">
+                                                         <input type="password" name="signpass2" class="form-style" placeholder="Confirmation Password" id="signpass2" autocomplete="off" required>
                                                          <i class="input-icon uil uil-lock-alt"></i>
+                                                         <div id="passwordMismatchError" class="error" style="color: red;"></div>
                                                     </div>
-                                                    <button type="submit" id="signsubmit" class="btn mt-4">Submit</button>                                                
+                                                    <button type="submit" id="signsubmit" class="btn mt-4">Sign Up</button>                                                
                                                 </form>     
                                             </div>
                                         </div>
@@ -81,4 +79,22 @@
             </div>
         </div>
     </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('signsubmit').addEventListener('click', function(e) {
+                var password = document.getElementById('signpass').value;
+                var confirmPassword = document.getElementById('signpass2').value;
+                var passwordMismatchError = document.getElementById('passwordMismatchError');
+        
+                // Réinitialiser le message d'erreur
+                passwordMismatchError.textContent = '';
+        
+                // Vérifier si les mots de passe correspondent
+                if (password !== confirmPassword) {
+                    e.preventDefault(); // Empêcher la soumission du formulaire
+                    passwordMismatchError.textContent = 'Les mots de passe ne correspondent pas.';
+                }
+            });
+        });
+        </script>
     </html>

@@ -1,7 +1,9 @@
 package database
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,7 +13,7 @@ import (
 
 func Database() {
 	// user_id := 0
-	db, err := sql.Open("sqlite3", "/Users/quentingros/Desktop/Groupie-Tracker/database/db.sqlite")
+	db, err := sql.Open("sqlite3", "database/database.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,7 +85,7 @@ func InsertFormData(username, email, password string) error {
 	defer stmt.Close()
 
 	// Exécution de la requête d'insertion avec les valeurs du formulaire
-	_, err = stmt.Exec(password, username, email)
+	_, err = stmt.Exec(email, username, password)
 	if err != nil {
 		return fmt.Errorf("erreur lors de l'insertion dans la base de données: %v", err)
 	}
@@ -92,6 +94,12 @@ func InsertFormData(username, email, password string) error {
 	db.Close()
 	return nil
 
+}
+
+func Hash(password string) string {
+	h := sha256.New()
+	h.Write([]byte(password))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 // func register(db *sql.DB, id int) {

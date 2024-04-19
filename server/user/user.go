@@ -26,7 +26,6 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-	// Récupérer les données du formulaire depuis la requête HTTP
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
@@ -35,9 +34,20 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("signname")
 	email := r.FormValue("signemail")
 	password := r.FormValue("signpass")
+	// if password != confirmpassword {
+	// 	http.Error(w, "Les mots de passe ne correspondent pas", http.StatusBadRequest)
+	// 	return
+	// } else if len(password) < 12 {
+	// 	http.Error(w, "Le mot de passe doit contenir au moins 12 caractères", http.StatusBadRequest)
+	// 	return
+	// } else if len(username) < 3 {
+	// 	http.Error(w, "Le nom d'utilisateur doit contenir au moins 3 caractères", http.StatusBadRequest)
+	// 	return
+	// }
+	password = database.Hash(password)
 
 	// Insérer les données dans la base de données en appelant la fonction existante
-	err = database.InsertFormData(username, email, password)
+	err = database.InsertFormData(email, username, password)
 	if err != nil {
 		http.Error(w, "Erreur lors de l'insertion des données dans la base de données", http.StatusInternalServerError)
 		return
@@ -47,6 +57,24 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+
+	}
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
+		return
+	}
+
+	// emailorUsername := r.FormValue("logemail/logname")
+	password := r.FormValue("logpass")
+
+	password = database.Hash(password)
+
+	http.ServeFile(w, r, "./choosegamepage.html")
 }
 
 func UpdateUser(db *sql.DB, id int, username string, email string, password string) {
