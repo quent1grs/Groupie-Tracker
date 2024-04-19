@@ -32,40 +32,6 @@ func Database() {
 	}
 }
 
-// 	fmt.Println("do you want to register ? (y/n)")
-// 	var response string
-// 	fmt.Scanln(&response)
-
-// 	if response == "y" {
-// 		register(db, user_id)
-// 	}
-
-// 	fmt.Println("do you want to delete all users ? (y/n)")
-// 	fmt.Scanln(&response)
-
-// 	if response == "y" {
-// 		deleteAllUsers(db)
-// 	}
-
-// 	rows, err := db.Query("SELECT * FROM USER")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var id int
-// 		var pseudo string
-// 		var email string
-// 		var password string
-// 		err = rows.Scan(&id, &pseudo, &email, &password)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		fmt.Println(id, pseudo, email, password)
-// 	}
-// }
-
 // InsertFormData insère les données du formulaire dans la base de données
 func InsertFormData(username, email, password string) error {
 	// Ouverture de la connexion à la base de données
@@ -98,24 +64,6 @@ func Hash(password string) string {
 	h.Write([]byte(password))
 	return hex.EncodeToString(h.Sum(nil))
 }
-
-// func register(db *sql.DB, id int) {
-// 	if id > 1 {
-// 		id = -1
-// 	}
-// 	pseudo := ""
-// 	email := ""
-// 	password := ""
-
-// 	fmt.Println("Enter your pseudo: ")
-// 	fmt.Scanln(&pseudo)
-// 	fmt.Println("Enter your email: ")
-// 	fmt.Scanln(&email)
-// 	fmt.Println("Enter your password: ")
-// 	fmt.Scanln(&password)
-
-// 	id++
-// }
 
 func GetUsers(db *sql.DB) {
 	// Préparation de la requête SQL

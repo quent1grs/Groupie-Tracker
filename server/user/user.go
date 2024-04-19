@@ -34,16 +34,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("signname")
 	email := r.FormValue("signemail")
 	password := r.FormValue("signpass")
-	// if password != confirmpassword {
-	// 	http.Error(w, "Les mots de passe ne correspondent pas", http.StatusBadRequest)
-	// 	return
-	// } else if len(password) < 12 {
-	// 	http.Error(w, "Le mot de passe doit contenir au moins 12 caractères", http.StatusBadRequest)
-	// 	return
-	// } else if len(username) < 3 {
-	// 	http.Error(w, "Le nom d'utilisateur doit contenir au moins 3 caractères", http.StatusBadRequest)
-	// 	return
-	// }
+
 	password = database.Hash(password)
 
 	// Insérer les données dans la base de données en appelant la fonction existante
