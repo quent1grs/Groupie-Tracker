@@ -1,9 +1,13 @@
 package spotifyapi
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+
+	mm "github.com/fr05t1k/musixmatch"
+	mmhttp "github.com/fr05t1k/musixmatch/http"
 )
 
 type Track struct {
@@ -41,6 +45,16 @@ type Album struct {
 	Name string `json:"name"`
 }
 
+type LyricsBody struct {
+	Lyrics []Lyric `json:"body"`
+}
+
+type Lyric struct {
+	ID       int    `json:"id"`
+	Text     string `json:"text"`
+	Language string `json:"language"`
+}
+
 func GetPlaylist(url string, token string) []byte {
 	client := &http.Client{}
 
@@ -61,6 +75,27 @@ func GetPlaylist(url string, token string) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//printTitle(body)
 	return body
+}
+
+func GetLyrics(title string, artist string) {
+	client := mm.NewClient("78b38fd30f412e2735ef3229e3f93e94")
+	println("title : " + title + " artist : " + artist)
+
+	searchRequest := mmhttp.SearchRequest{QueryTrack: title, QueryArtist: artist}
+
+	tracks, err := client.SearchTrack(searchRequest)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(tracks) > 0 {
+		trackID := tracks[0].Track.Id
+
+		lyrics, _ := client.GetLyrics(trackID)
+
+		fmt.Println(lyrics.Id)
+		fmt.Println(lyrics.Body)
+		fmt.Println(lyrics.Language)
+	}
 }

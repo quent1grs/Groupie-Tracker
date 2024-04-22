@@ -8,6 +8,7 @@ import (
 	"groupietracker/database"
 	"io"
 	"log"
+	mrand "math/rand"
 	"net/http"
 	"net/url"
 	"path"
@@ -37,7 +38,7 @@ func main() {
 	musicUrl := []string{}
 
 	token := getToken()
-	body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/19DELLlODoh9m2ymmizfS2", token)
+	body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X", token)
 
 	var playlist spotifyapi.SearchResponse
 	err := json.Unmarshal(body, &playlist)
@@ -49,9 +50,16 @@ func main() {
 		uri := path.Base(item.Track.ExternalUrls.Spotify)
 		musicUrl = append(musicUrl, uri)
 	}
+	i := mrand.Intn(len(musicUrl))
+	println("url de la musique : " + musicUrl[i])
+
+	title := playlist.Tracks.Items[i].Track.Name
+	artist := playlist.Tracks.Items[i].Track.Artists[0].Name
+
+	spotifyapi.GetLyrics(title, artist)
 	// data: variable à passer à la page HTML pour la musique
 	// data := PageData{
-	// 	URL: musicUrl[rand.Intn(len(musicUrl))],
+	// 	URL: musicUrl[i],
 	// }
 
 	fmt.Println("Launching server.")
