@@ -7,24 +7,33 @@
     <title>Choose Game</title>
 </head>
 <body>
+  <video autoplay muted loop id="bg-video">
+    <source src="assets/img/vinyles.mp4" type="video/mp4">
+  </video>
   <div class="container">
-    <div>
-      <div class="content">
-        <h2>Blind Test</h2>
-      </div>
-    </div>
-    <div>
-      <div class="content">
-        <h2>Deaf Test</h2>
-      </div>
-    </div>
-    <div>
-      <div class="content">
-        <h2>PTIT BAC</h2>
-      </div>
-    </div>
-    <div>
-    </div>
+    <input type="radio" name="slider" id="item-1" checked>
+    <input type="radio" name="slider" id="item-2">
+    <input type="radio" name="slider" id="item-3">
+  <div class="cards">
+    <label class="card" for="item-1" id="song-1">
+      <img src="https://www.toulousebouge.com/images/icagenda/frontend/images/20240118_124818_299_BLIND-TEST.jpg" alt="BlindTest">
+    </label>
+    <label class="card" for="item-2" id="song-2">
+      <img src="https://images.unsplash.com/photo-1559386484-97dfc0e15539?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80" alt="song">
+    </label>
+    <label class="card" for="item-3" id="song-3">
+      <img src="https://images.unsplash.com/photo-1533461502717-83546f485d24?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="song">
+    </label>
   </div>
+  <button id="PLAYBTN">
+    <svg id="PLAY" height="30" width="200">
+      <text x="5" y="15" fill="red">PLAY !</text>
+    </svg>
+  </button>
+</div>
 </body>
+<script>$('input').on('change', function() {
+  $('body').toggleClass('blue');
+});
+</script>
 </html>
