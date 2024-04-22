@@ -1,12 +1,12 @@
 package spotifyapi
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 
 	mm "github.com/fr05t1k/musixmatch"
+	"github.com/fr05t1k/musixmatch/entity/lyrics"
 	mmhttp "github.com/fr05t1k/musixmatch/http"
 )
 
@@ -78,7 +78,7 @@ func GetPlaylist(url string, token string) []byte {
 	return body
 }
 
-func GetLyrics(title string, artist string) {
+func GetLyrics(title string, artist string) *lyrics.Lyrics {
 	client := mm.NewClient("78b38fd30f412e2735ef3229e3f93e94")
 	println("title : " + title + " artist : " + artist)
 
@@ -89,13 +89,12 @@ func GetLyrics(title string, artist string) {
 		log.Fatal(err)
 	}
 
+	var lyrics *lyrics.Lyrics
 	if len(tracks) > 0 {
 		trackID := tracks[0].Track.Id
 
-		lyrics, _ := client.GetLyrics(trackID)
+		lyrics, _ = client.GetLyrics(trackID)
 
-		fmt.Println(lyrics.Id)
-		fmt.Println(lyrics.Body)
-		fmt.Println(lyrics.Language)
 	}
+	return lyrics
 }
