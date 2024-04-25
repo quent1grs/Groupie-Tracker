@@ -53,11 +53,11 @@ func main() {
 	i := mrand.Intn(len(musicUrl))
 	println("url de la musique : " + musicUrl[i])
 
-	title := playlist.Tracks.Items[i].Track.Name
-	artist := playlist.Tracks.Items[i].Track.Artists[0].Name
+	// title := playlist.Tracks.Items[i].Track.Name
+	// artist := playlist.Tracks.Items[i].Track.Artists[0].Name
 
-	lyrics := spotifyapi.GetLyrics(title, artist)
-	fmt.Println(lyrics.Language)
+	// lyrics := spotifyapi.GetLyrics(title, artist)
+	// fmt.Println(lyrics.Language)
 	// data: variable à passer à la page HTML pour la musique
 	// data := PageData{
 	// 	URL: musicUrl[i],

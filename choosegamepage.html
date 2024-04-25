@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="assets/css/choosegamepage.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Game</title>
@@ -25,9 +26,20 @@
       <img src="https://images.unsplash.com/photo-1533461502717-83546f485d24?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="song">
     </label>
   </div>
-  <button id="PLAYBTN">
-    <svg id="PLAY" height="30" width="200">
-      <text x="5" y="15" fill="red">PLAY !</text>
+  <button id="playButton">
+    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="neon-effect" x="-50%" y="-50%" width="200%" height="200%">
+          <feFlood result="flood" flood-color="red" flood-opacity="0.5"></feFlood>
+          <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
+          <feGaussianBlur in="mask" result="blurred" stdDeviation="1"></feGaussianBlur> <!-- Valeur réduite pour moins de flou -->
+          <feMerge>
+            <feMergeNode in="blurred"></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+      </defs>
+      <text x="20" y="150" font-family="'Press Start 2P'" font-size="90" font-weight="bold" letter-spacing="3" fill="red" filter="url(#neon-effect)" class="neon-letter">PLAY</text>
     </svg>
   </button>
 </div>
