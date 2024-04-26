@@ -5,11 +5,13 @@
 }
 
 #bg-video {
-  position: fixed; /* ou absolute selon le besoin */
+  position: absolute; /* osu absolute selon le besoin */
   right: 0;
   bottom: 0;
-  min-width: 100%; 
-  min-height: 100%;
+  min-height: 90%; 
+  max-width: 120% ;
+  max-height:120%;
+  min-height: 90%;
   z-index: -100; /* Assurez-vous que la vidéo reste en arrière-plan */
 }
 
@@ -97,160 +99,56 @@ img {
   }
 }
 
-.player {
-  background-color: #fff;
-  border-radius: 8px;
-  min-width: 320px;
-  padding: 16px 10px;
+
+#playButton {
+  height: 20%;
+  width: 20%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-block;
 }
 
-.upper-part {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  height: 36px;
-  overflow: hidden;
+.neon {
+  fill: red;
+  filter: url(#neon-effect);
 }
-
-.play-icon{ margin-right: 10px; }
-
-.song-info {
-  width: calc(100% - 32px);
-  display: block;
-}
-
-.song-info .title {
-  color: #403d40;
-  font-size: 14px;
-  line-height: 24px;
-}
-
-.sub-line {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.subtitle, .time {
-  font-size: 12px;
-  line-height: 16px;
-  color: #c6c5c6;
-}
-
-.time {
-  font-size: 12px;
-  line-height: 16px;
-  color: #a5a5a5;
-  font-weight: 500;
-  margin-left: auto;
-}
-
-.progress-bar {
-  height: 3px;
-  width: 100%;
-  background-color: #e9efff;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progress {
-  display: block;
-  position: relative;
-  width: 60%;
-  height: 100%;
-  background-color: #2992dc;
-  border-radius: 6px;
-}
-button {
-  --green: #1BFD9C;
-  font-size: 15px;
-  padding: 0.7em 2.7em;
-  letter-spacing: 0.06em;
-  position: relative;
-  font-family: inherit;
-  border-radius: 0.6em;
-  overflow: hidden;
-  transition: all 0.3s;
-  line-height: 1.4em;
-  border-left: 2px solid var(--green);
-  border-top: 2px solid var(--green);
-  background: linear-gradient(to right, rgba(27, 253, 156, 0.1) 1%, transparent 40%, transparent 60%, rgba(27, 253, 156, 0.1) 100%);
-  color: var(--green);
-  box-shadow: inset 0 0 10px rgba(27, 253, 156, 0.4), 0 0 9px 3px rgba(27, 253, 156, 0.1);
-}
-
-button:hover {
-  color: #82ffc9;
-  text-shadow: 0 0 10px #82ffc9, 0 0 20px #82ffc9, 0 0 40px #82ffc9, 0 0 80px #82ffc9, 0 0 160px #82ffc9;
-}
-
-button:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -2px; /* Positionne l'effet néon au-dessus du bouton */
-  height: 2px; /* Ajuste la hauteur de l'effet néon */
-  background: linear-gradient(to right, rgba(27, 253, 156, 0), rgba(27, 253, 156, 0.7) 50%, rgba(27, 253, 156, 0) 100%);
-  transition: transform .4s ease-in-out;
-}
-
-button:hover:before {
-  transform: translateY(-10px); /* Ajuste pour un effet de mouvement subtil */
-}
-
-button:hover {
-  color: #82ffc9;
-  box-shadow: inset 0 0 10px rgba(27, 253, 156, 0.6), 0 0 9px 3px rgba(27, 253, 156, 0.2);
-}
-
-button:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -2px; /* Positionne l'effet néon au-dessus du bouton */
-  height: 2px; /* Ajuste la hauteur de l'effet néon */
-  background: linear-gradient(to right, rgba(27, 253, 156, 0), rgba(27, 253, 156, 0.7) 50%, rgba(27, 253, 156, 0) 100%);
-  transition: transform .4s ease-in-out;
-}
-
-button:hover:before {
-  transform: translateY(-10px); /* Ajuste pour un effet de mouvement subtil */
-}
-
-.info-area {
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 30px;
-  transition: transform .4s ease-in;
-}
-
-#item-2:checked ~ .player #test {
-  transform: translateY(0);
-}
-
-#item-2:checked ~ .player #test  {
-  transform: translateY(-40px);
-}
-
-#item-3:checked ~ .player #test  {
-  transform: translateY(-80px);
-}
-
-@keyframes saxo-blink {
-  0%, 9%, 15%, 79%, 83%, 100%{
-
-      filter: 
-      drop-shadow(0 0.15vw 0.30vw #d52531)
-      drop-shadow(0 0.15vw 0.30vw #8a8942);
-  
+@keyframes neonEffect {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow:
+      0 0 0.25vw #c30b0b, /* Réduit la dispersion de l'ombre */
+      0.05vw 0 0.25vw #c30b0b, /* Réduit la dispersion et l'intensité */
+      0.15vw 0 0.25vw #c30b0b, /* Ajustements similaires pour les autres ombres */
+      0 0 0vw #c30b0b,
+      0.05vw 0 0vw #c30b0b,
+      0.15vw 0 0vw #c30b0b,
+      0 0 0vw #c30b0b,
+      0.05vw 0 0vw #c30b0b, /* Couleur plus douce pour une ombre moins intense */
+      0.15vw 0 0vw #c30b0b;
   }
-  
-  10%, 14%, 80%, 82% {        
-      
-      filter: none;
-  }  
+
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
 }
+
+.neon-letter {
+  animation: neonEffect 5s infinite alternate ease-in-out;
+}
+
+/*
+.neon-letter {
+  animation: blink 2s infinite alternate;
+
+  animation-name: neonBlinkRealistic;
+  animation-duration: 5s; 
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite alternate; 
+  animation-delay: calc(-1s * var(--animation-order)); 
+}
+
+.neon-letter:nth-of-type(1) { --animation-order: 1; }
+.neon-letter:nth-of-type(2) { --animation-order: 2; }
+.neon-letter:nth-of-type(3) { --animation-order: 3; }
+.neon-letter:nth-of-type(4) { --animation-order: 4; } */

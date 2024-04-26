@@ -1,0 +1,16 @@
+<svg width="400px" height="400px" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="neon-effect" x="-50%" y="-50%" width="200%" height="200%">
+      <feFlood result="flood" flood-color="red" flood-opacity="1"></feFlood>
+      <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
+      <feGaussianBlur in="mask" result="blurred" stdDeviation="10"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blurred"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+  <text x="50" y="200" font-family="'Courier New', monospace" font-size="100" font-weight="bold" letter-spacing="5" fill="red" filter="url(#neon-effect)">
+    PLAY
+  </text>
+</svg>
