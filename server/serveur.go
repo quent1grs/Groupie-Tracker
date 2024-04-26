@@ -53,16 +53,6 @@ func main() {
 	i := mrand.Intn(len(musicUrl))
 	println("url de la musique : " + musicUrl[i])
 
-	// title := playlist.Tracks.Items[i].Track.Name
-	// artist := playlist.Tracks.Items[i].Track.Artists[0].Name
-
-	// lyrics := spotifyapi.GetLyrics(title, artist)
-	// fmt.Println(lyrics.Language)
-	// data: variable à passer à la page HTML pour la musique
-	// data := PageData{
-	// 	URL: musicUrl[i],
-	// }
-
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
 	fs := http.FileServer(http.Dir("./assets"))
@@ -72,17 +62,12 @@ func main() {
 		log.Printf("File server found.")
 	}
 
-	// Code issu de la démo de chat. À conserver pour le chat global.
-	// hub := newHub()
-	// go hub.run()
-	// http.HandleFunc("/ws", func(w http.ResponseWriter, rhttp.Request) {
-	//     serveWs(hub, w, r)
-	// })
-
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/signup", user.HandleSignup)
 	http.HandleFunc("/login", user.HandleLogin)
 	http.HandleFunc("/", handleHome)
+	http.HandleFunc("/checkUsername", user.HandleCheckUsername) // Nouvelle route : checkUsername (pour vérifier la disponibilité d'un nom d'utilisateur lors de l'inscription par requête AJAX)
+	http.HandleFunc("/checkEmail", user.HandleCheckEmail)       // Nouvelle route : checkEmail (pour vérifier la disponibilité d'un email lors de l'inscription par requête AJAX)
 	// TODO : Routes à ajouter
 
 	server := &http.Server{

@@ -123,3 +123,35 @@ func deleteAllUsers(db *sql.DB) {
 		log.Fatal(err)
 	}
 }
+
+func IsUsernameInDB(username string) bool {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT username FROM USER WHERE username = ?", username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	return rows.Next()
+}
+
+func IsEmailInDB(email string) bool {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT email FROM USER WHERE email = ?", email)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	return rows.Next()
+}
