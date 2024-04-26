@@ -18,6 +18,7 @@ import (
 	user "groupietracker/server/user"
 	spotifyapi "groupietracker/spotifyApi"
 
+	"github.com/fr05t1k/musixmatch/entity/lyrics"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -29,7 +30,8 @@ var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 // ENDEF CONFIGURABLES
 
 type PageData struct {
-	URL string
+	URL    string
+	Lyrics *lyrics.Lyrics
 }
 
 // var loggedUsers = make(map[string]user.User)
@@ -50,6 +52,7 @@ func main() {
 		uri := path.Base(item.Track.ExternalUrls.Spotify)
 		musicUrl = append(musicUrl, uri)
 	}
+
 	i := mrand.Intn(len(musicUrl))
 	println("url de la musique : " + musicUrl[i])
 
@@ -60,7 +63,8 @@ func main() {
 	fmt.Println(lyrics.Language)
 	// data: variable à passer à la page HTML pour la musique
 	// data := PageData{
-	// 	URL: musicUrl[i],
+	// 	URL:    musicUrl[i],
+	// 	Lyrics: lyrics,
 	// }
 
 	fmt.Println("Launching server.")
