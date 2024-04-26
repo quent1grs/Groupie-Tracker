@@ -10,6 +10,13 @@ import (
 	mmhttp "github.com/fr05t1k/musixmatch/http"
 )
 
+type Music struct {
+	Artists     []string
+	Titles      []string
+	MusicUrl    []string
+	MusicLyrics []string
+}
+
 type Track struct {
 	Album        Album        `json:"album"`
 	Name         string       `json:"name"`
@@ -80,7 +87,6 @@ func GetPlaylist(url string, token string) []byte {
 
 func GetLyrics(title string, artist string) *lyrics.Lyrics {
 	client := mm.NewClient("78b38fd30f412e2735ef3229e3f93e94")
-	println("title : " + title + " artist : " + artist)
 
 	searchRequest := mmhttp.SearchRequest{QueryTrack: title, QueryArtist: artist}
 

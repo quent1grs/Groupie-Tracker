@@ -8,17 +8,16 @@ import (
 	"groupietracker/database"
 	"io"
 	"log"
-	mrand "math/rand"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
 	"time"
 
+	"groupietracker/server/games"
 	user "groupietracker/server/user"
 	spotifyapi "groupietracker/spotifyApi"
 
-	"github.com/fr05t1k/musixmatch/entity/lyrics"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -29,43 +28,14 @@ var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 
 // ENDEF CONFIGURABLES
 
-type PageData struct {
-	URL    string
-	Lyrics *lyrics.Lyrics
-}
-
 // var loggedUsers = make(map[string]user.User)
 
 func main() {
-	musicUrl := []string{}
-
+	var Music spotifyapi.Music
 	token := getToken()
 	body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X", token)
 
-	var playlist spotifyapi.SearchResponse
-	err := json.Unmarshal(body, &playlist)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, item := range playlist.Tracks.Items {
-		uri := path.Base(item.Track.ExternalUrls.Spotify)
-		musicUrl = append(musicUrl, uri)
-	}
-
-	i := mrand.Intn(len(musicUrl))
-	println("url de la musique : " + musicUrl[i])
-
-	// title := playlist.Tracks.Items[i].Track.Name
-	// artist := playlist.Tracks.Items[i].Track.Artists[0].Name
-
-	// lyrics := spotifyapi.GetLyrics(title, artist)
-	// fmt.Println(lyrics.Language)
-	// data: variable à passer à la page HTML pour la musique
-	// data := PageData{
-	// 	URL:    musicUrl[i],
-	// 	Lyrics: lyrics,
-	// }
+	Music.Artists, Music.Titles, Music.MusicUrl, Music.MusicLyrics = parsePlaylist(body)
 
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
@@ -84,6 +54,7 @@ func main() {
 	// })
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	http.HandleFunc("/blindtest", games.HandleBlindtest)
 	http.HandleFunc("/signup", user.HandleSignup)
 	http.HandleFunc("/login", user.HandleLogin)
 	http.HandleFunc("/", handleHome)
@@ -96,7 +67,7 @@ func main() {
 	}
 
 	// Démarrage du serveur
-	err = server.ListenAndServe()
+	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -131,4 +102,32 @@ func getToken() string {
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./home-page.html")
+}
+
+func parsePlaylist(body []byte) ([]string, []string, []string, []string) {
+	var musicUrl []string
+	var musicLyrics []string
+	var artists []string
+	var titles []string
+	var playlist spotifyapi.SearchResponse
+
+	err := json.Unmarshal(body, &playlist)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, item := range playlist.Tracks.Items {
+		uri := path.Base(item.Track.ExternalUrls.Spotify)
+		musicUrl = append(musicUrl, uri)
+		title := item.Track.Name
+		titles = append(titles, title)
+		artist := item.Track.Artists[0].Name
+		artists = append(artists, artist)
+		lyrics := spotifyapi.GetLyrics(title, artist)
+		parts := strings.Split(lyrics.Body, "\n...\n\n******* This Lyrics is NOT for Commercial use *******")
+		lyrics.Body = parts[0]
+		musicLyrics = append(musicLyrics, lyrics.Body)
+	}
+
+	return artists, titles, musicUrl, musicLyrics
 }
