@@ -3,9 +3,11 @@ package user
 import (
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"groupietracker/database"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type User struct {
@@ -44,7 +46,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//Actualiser la page en renvoyant le même fichier HTML
-	http.ServeFile(w, r, "./home-page.html")
+	// http.ServeFile(w, r, "./home-page.html")
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -122,4 +124,56 @@ func DecodePassword(password string) string {
 		log.Fatal(err)
 	}
 	return string(decoded)
+}
+
+func IsPasswordValid(password string) bool {
+	// Check if password is valid
+	if len(password) < 8 || !strings.ContainsAny(password, "0123456789") || !strings.ContainsAny(password, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") || !strings.ContainsAny(password, "abcdefghijklmnopqrstuvwxyz") || !strings.ContainsAny(password, "!@#$%^&*()_+|~-=`{}[]:;<>?,./") {
+		return false
+	}
+	return true
+}
+
+// Vérifier si le nom d'utilisateur est disponible dans la base de données
+func HandleCheckUsername(w http.ResponseWriter, r *http.Request) {
+	var isUsernameValid bool
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
+		return
+	}
+	username := r.FormValue("signname")
+
+	if database.IsUsernameInDB(username) {
+		isUsernameValid = false
+	} else {
+		isUsernameValid = true
+	}
+	fmt.Fprint(w, isUsernameValid)
+}
+
+// Vérifier si l'email est disponible dans la base de données
+func HandleCheckEmail(w http.ResponseWriter, r *http.Request) {
+	var isEmailValid bool
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
+		return
+	}
+	email := r.FormValue("signemail")
+
+	if database.IsEmailInDB(email) {
+		isEmailValid = false
+	} else {
+		isEmailValid = true
+	}
+	fmt.Fprint(w, isEmailValid)
 }

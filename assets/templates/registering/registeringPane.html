@@ -1,0 +1,30 @@
+{{define "registeringPane"}}
+<div class="form-group">
+    <input type="text" name="signname" class="form-style" placeholder="Username"  id="signname" autocomplete="off" required>
+    <i class="input-icon uil uil-user"></i>
+    {{if .usernameValidity}}
+        <div id="usernameUsedError" class="error" style="color: red;">Ce nom d'utiisateur est déjà pris</div>
+    {{end}}
+</div>  
+<div class="form-group mt-2">
+    <input type="email" name="signemail" class="form-style" placeholder="Your Email" id="signemail" autocomplete="off" required>
+    <i class="input-icon uil uil-at"></i>
+    {{if .emailValidity}}
+        <div id="emailUsedError" class="error" style="color: red;">Cette adresse email est déjà prise</div>
+    {{end}}
+</div>  
+<div class="form-group mt-2">
+    <input type="password" name="signpass" class="form-style" placeholder="Your Password" minlength="12" id="signpass" autocomplete="off" required>
+    <i class="input-icon uil uil-lock-alt"></i>
+    {{if .passwordValidity}}
+        <div id="passwordConformityError" class="error" style="color: red;">Le mot de passe doit contenir au moins 12 caractères, des chiffres, des majuscules, des minuscules et des caractères spéciaux.</div>
+    {{end}}
+</div>
+<div class="form-group mt-2">
+    <input type="password" name="signpass2" class="form-style" placeholder="Confirmation Password" id="signpass2" autocomplete="off" required>
+    <i class="input-icon uil uil-lock-alt"></i>
+    {{if .passwordConfirmation}}
+        <div id="passwordMismatchError" class="error" style="color: red;">Les mots de passe ne correspondent pas.</div>
+    {{end}}
+</div>
+{{end}}

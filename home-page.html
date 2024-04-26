@@ -50,21 +50,25 @@
                                             <form action="/signup" id="signupForm" method="POST">
                                                 <div class="form-group">
                                                     <input type="text" name="signname" class="form-style" placeholder="Username"  id="signname" autocomplete="off" required>
-                                                     <i class="input-icon uil uil-user"></i>
+                                                    <i class="input-icon uil uil-user"></i>
+                                                    <div id="usernameUsedError" class="error" style="color: red;"></div>
                                                 </div>  
                                                 <div class="form-group mt-2">
                                                     <input type="email" name="signemail" class="form-style" placeholder="Your Email" id="signemail" autocomplete="off" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$" title="L'adresse e-mail doit suivre le format: a@a.com" required>                                                    <i class="input-icon uil uil-at"></i>
+                                                    <i class="input-icon uil uil-at"></i>
+                                                    <div id="emailUsedError" class="error" style="color: red;"></div>
                                                 </div>  
                                                 <div class="form-group mt-2">
                                                     <input type="password" name="signpass" class="form-style" placeholder="Your Password" minlength="12" id="signpass" autocomplete="off" required>
                                                     <i class="input-icon uil uil-lock-alt"></i>
+                                                    <div id="passwordConformityError" class="error" style="color: red;"></div>
                                                 </div>
                                                 <div class="form-group mt-2">
-                                                     <input type="password" name="signpass2" class="form-style" placeholder="Confirmation Password" id="signpass2" autocomplete="off" required>
-                                                     <i class="input-icon uil uil-lock-alt"></i>
+                                                    <input type="password" name="signpass2" class="form-style" placeholder="Confirmation Password" id="signpass2" autocomplete="off" required>
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                    <div id="passwordMismatchError" class="error" style="color: red;"></div>  
                                                 </div>
                                                 <button type="submit" id="signsubmit" class="btn mt-4">Sign Up</button>
-                                                <div id="passwordMismatchError" class="error" style="color: red;"></div>                                                
                                             </form>     
                                         </div>
                                     </div>
@@ -79,23 +83,52 @@
     </div>
 </body>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('signupForm').addEventListener('submit', function(e) {
+
+    document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('signsubmit').addEventListener('submit', function(e) {
         var password = document.getElementById('signpass').value;
         var confirmPassword = document.getElementById('signpass2').value;
         var passwordMismatchError = document.getElementById('passwordMismatchError');
+        var passwordConformityError = document.getElementById('passwordConformityError');
+        var usernameUsedError = document.getElementById('usernameUsedError');
+        var emailUsedError = document.getElementById('emailUsedError');
+
+        // Vérifier auprès de la database si le nom d'utilisateur est déjà utilisé
+        $.ajax({
+                    url: '/checkUsername', 
+                    type: 'POST',
+                    data: {username: document.getElementById('signname').value},
+                    success: function(response) {
+                        if (response === 'true') {
+                            usernameUsedError.textContent = 'Ce nom d\'utilisateur est déjà utilisé.';
+                        } else {
+                            usernameUsedError.textContent = '';
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: '/checkEmail', 
+                    type: 'POST',
+                    data: {email: document.getElementById('signemail').value},
+                    success: function(response) {
+                        if (response === 'true') {
+                            emailUsedError.textContent = 'Cet e-mail est déjà utilisé.';
+                        } else {
+                            emailUsedError.textContent = '';
+                        }
+                    }
+                });
 
         // Réinitialiser le message d'erreur
         passwordMismatchError.textContent = '';
 
-        // Vérifier si les champs de mot de passe et de confirmation sont remplis
-        if (password !== '' && confirmPassword !== '') {
-            // Vérifier si les mots de passe correspondent
-            if (password !== confirmPassword) {
-                e.preventDefault(); // Empêcher la soumission du formulaire
-                passwordMismatchError.textContent = 'Les mots de passe ne correspondent pas.';
-            }
+        // Vérifier si les mots de passe correspondent
+        if (password !== confirmPassword) {
+            e.preventDefault(); // Empêcher la soumission du formulaire
+            passwordMismatchError.textContent = 'Les mots de passe ne correspondent pas.';
         }
+        
     });
 });
 </script>
