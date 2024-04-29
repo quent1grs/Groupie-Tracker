@@ -40,6 +40,8 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
+	http.HandleFunc("/deaftest", games.HandleDeafTest)
+	http.HandleFunc("/scattegories", games.HandleScattegories)
 	http.HandleFunc("/signup", user.HandleSignup)
 	http.HandleFunc("/login", user.HandleLogin)
 	http.HandleFunc("/", handleHome)

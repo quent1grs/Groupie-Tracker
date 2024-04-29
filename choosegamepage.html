@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="assets/css/choosegamepage.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap">
     <meta charset="UTF-8">
@@ -18,12 +19,21 @@
   <div class="cards">
     <label class="card" for="item-1" id="song-1">
       <img src="assets/img/blindtest.png" alt="BlindTest">
+      <span class="card-text">BLINDTEST</span>
+      <button id="crea" class="hidden-btn" style="display:none;">Create</button>
+      <button id="join" class="hidden-btn" style="display:none;">Join</button>
     </label>
     <label class="card" for="item-2" id="song-2">
       <img src="assets/img/Deaftest.png" alt="song">
+      <span class="card-text">DEAFTEST</span>
+      <button id="crea" class="hidden-btn" style="display:none;">Create</button>
+      <button id="join" class="hidden-btn" style="display:none;">Join</button>
     </label>
     <label class="card" for="item-3" id="song-3">
       <img src="assets/img/Scattegories.png" alt="song">
+      <span class="card-text">SCATTEGORIES</span>
+      <button id="crea" class="hidden-btn" style="display:none;">Create</button>
+      <button id="join" class="hidden-btn" style="display:none;">Join</button>
     </label>
   </div>
   <button id="playButton">
@@ -43,9 +53,35 @@
     </svg>
   </button>
 </div>
+  <form action="/blindtest.html">
+    <button>click</button>
+  </form>
 </body>
-<script>$('input').on('change', function() {
-  $('body').toggleClass('blue');
+<script>
+$(document).ready(function() {
+  // Gestionnaire d'événements pour le bouton "PLAY"
+  $('#playButton').click(function() {
+    // D'abord, réinitialise toutes les cartes à leur état initial
+    $('.card-text').removeClass('text-up');
+    $('.hidden-btn').hide().removeClass('btn-show');
+
+    // Ensuite, trouve la carte actuellement sélectionnée et applique les animations
+    var selectedCardId = $('input[type=radio][name=slider]:checked').attr('id');
+    var cardSelector = 'label[for=' + selectedCardId + ']';
+    
+    var text = $(cardSelector + ' .card-text');
+    var buttons = $(cardSelector + ' .hidden-btn');
+    
+    text.addClass('text-up'); // Déplace le texte vers le haut
+    buttons.show().addClass('btn-show'); // Affiche et anime les boutons
+  });
+
+  // Logique pour réinitialiser l'état des cartes lorsqu'une autre carte est sélectionnée
+  $('input[type=radio][name=slider]').change(function() {
+    // Réinitialise toutes les cartes à leur état initial
+    $('.card-text').removeClass('text-up');
+    $('.hidden-btn').hide().removeClass('btn-show');
+  });
 });
-</script>
+  </script>
 </html>

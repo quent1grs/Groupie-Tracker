@@ -98,7 +98,57 @@ img {
     box-shadow: 0px 0px 5px 0px rgba(81, 81, 81, 0.47);
   }
 }
+.card-text {
+  position: absolute; /* Positionne le texte sur l'image */
+  bottom: 10px; /* Ajustez selon le besoin */
+  left: 50%;
+  transform: translateX(-50%); /* Centre le texte horizontalement */
+  color: rgba(10, 147, 232, 0.665); /* Couleur du texte */
+  font-family: 'Press Start 2P'; /* Exemple de police */
+  font-size: 24px; /* Augmente la taille du texte */
+  font-weight: bold; /* Met le texte en gras */
+  transition: transform 0.5s ease;
+}
 
+#item-1:checked ~ .cards #song-1 .card-text,
+#item-2:checked ~ .cards #song-2 .card-text,
+#item-3:checked ~ .cards #song-3 .card-text {
+  display: block;
+  animation: fadeIn 2s ease-out; /* Applique l'animation fadeIn sur 1 seconde */
+  animation: cardtexteffect 2s infinite alternate ease-in-out;
+}
+
+.hidden-btn {
+  position: absolute;
+  bottom: 10px; /* Ajustez cette valeur pour positionner correctement les boutons à l'intérieur de la carte */
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.5s ease;
+  opacity: 0; /* Initialement caché */
+  display: none; /* Assurez-vous que cette propriété est gérée par JavaScript */
+  margin : 0 10px;
+}
+
+.text-up {
+  
+    transform: translateX(-50%) translateY(-120px); /* Ajoutez translateX(-50%) pour maintenir le centrage horizontal */
+    transition: transform 0.5s ease;
+}
+
+.btn-show {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#crea {
+  bottom: 90px;
+  margin: auto;
+}
+
+#join{
+  bottom: 60px;
+  margin: auto;
+}
 
 #playButton {
   height: 20%;
@@ -117,7 +167,7 @@ img {
 @keyframes neonEffect {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
     text-shadow:
-      0 0 0.25vw #c30b0b, /* Réduit la dispersion de l'ombre */
+      0 0 0.25vw #c30bc0, /* Réduit la dispersion de l'ombre */
       0.05vw 0 0.25vw #c30b0b, /* Réduit la dispersion et l'intensité */
       0.15vw 0 0.25vw #c30b0b, /* Ajustements similaires pour les autres ombres */
       0 0 0vw #c30b0b,
@@ -131,6 +181,30 @@ img {
   20%, 24%, 55% {
     text-shadow: none;
   }
+}
+@keyframes cardtexteffect {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow:
+      0 0 0.25vw #f9f6f6, /* Réduit la dispersion de l'ombre */
+      0.05vw 0 0.25vw #f9f6f6, /* Réduit la dispersion et l'intensité */
+      0.15vw 0 0.25vw #f9f6f6, /* Ajustements similaires pour les autres ombres */
+      0 0 0vw #f9f6f6,
+      0.05vw 0 0vw #f9f6f6,
+      0.15vw 0 0vw #f9f6f6,
+      0 0 0vw #f9f6f6,
+      0.05vw 0 0vw #f9f6f6, /* Couleur plus douce pour une ombre moins intense */
+      0.15vw 0 0vw #f9f6f6;
+  }
+
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+  
 }
 
 .neon-letter {
