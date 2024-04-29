@@ -98,7 +98,73 @@ img {
     box-shadow: 0px 0px 5px 0px rgba(81, 81, 81, 0.47);
   }
 }
+.card-text {
+  position: absolute; /* Positionne le texte sur l'image */
+  bottom: 10px; /* Ajustez selon le besoin */
+  left: 50%;
+  transform: translateX(-50%); /* Centre le texte horizontalement */
+  color: rgba(10, 147, 232, 0.665); /* Couleur du texte */
+  font-family: 'Press Start 2P'; /* Exemple de police */
+  font-size: 24px; /* Augmente la taille du texte */
+  font-weight: bold; /* Met le texte en gras */
+  transition: transform 0.5s ease;
+}
 
+#item-1:checked ~ .cards #song-1 .card-text,
+#item-2:checked ~ .cards #song-2 .card-text,
+#item-3:checked ~ .cards #song-3 .card-text {
+  display: block;
+  animation: fadeIn 2s ease-out; /* Applique l'animation fadeIn sur 1 seconde */
+  animation: cardtexteffect 1s infinite alternate ease-in-out;
+}
+
+.hidden-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  display: none;
+  margin: 0 10px;
+  animation: fadeIn 3s ease-out;
+  background-color: #f2b120; /* Couleur de fond rétro */
+  color: #fff; /* Texte blanc pour contraster avec le fond */
+  border: none;
+  border-radius: 5px; /* Bordures légèrement arrondies */
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive; /* Police rétro */
+  box-shadow: 0 4px #c69c6d; /* Ombre pour donner un effet de bouton pressé */
+  cursor: pointer;
+}
+
+.hidden-btn:hover {
+  background-color: #c69c6d;
+  box-shadow: 0 2px #a67c52;
+  transform: translateX(-50%) translateY(2px); /* Inclut translateX pour maintenir la position horizontale */
+}
+
+.text-up {
+  
+    transform: translateX(-50%) translateY(-120px); /* Ajoutez translateX(-50%) pour maintenir le centrage horizontal */
+    transition: transform 1.5s ease;
+}
+
+.btn-show {
+  display: block;
+  opacity: 1;
+  transition: opacity 3s ease;
+}
+
+#crea {
+  bottom: 80px;
+  margin: auto;
+}
+
+#join{
+  bottom: 30px;
+  margin: auto;
+}
 
 #playButton {
   height: 20%;
@@ -117,7 +183,7 @@ img {
 @keyframes neonEffect {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
     text-shadow:
-      0 0 0.25vw #c30b0b, /* Réduit la dispersion de l'ombre */
+      0 0 0.25vw #c30bc0, /* Réduit la dispersion de l'ombre */
       0.05vw 0 0.25vw #c30b0b, /* Réduit la dispersion et l'intensité */
       0.15vw 0 0.25vw #c30b0b, /* Ajustements similaires pour les autres ombres */
       0 0 0vw #c30b0b,
@@ -132,23 +198,31 @@ img {
     text-shadow: none;
   }
 }
+@keyframes cardtexteffect {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow:
+      0 0 0.25vw #f9f6f6, /* Réduit la dispersion de l'ombre */
+      0.05vw 0 0.25vw #f9f6f6, /* Réduit la dispersion et l'intensité */
+      0.15vw 0 0.25vw #f9f6f6, /* Ajustements similaires pour les autres ombres */
+      0 0 0vw #f9f6f6,
+      0.05vw 0 0vw #f9f6f6,
+      0.15vw 0 0vw #f9f6f6,
+      0 0 0vw #f9f6f6,
+      0.05vw 0 0vw #f9f6f6, /* Couleur plus douce pour une ombre moins intense */
+      0.15vw 0 0vw #f9f6f6;
+  }
+
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+  
+}
 
 .neon-letter {
   animation: neonEffect 5s infinite alternate ease-in-out;
 }
-
-/*
-.neon-letter {
-  animation: blink 2s infinite alternate;
-
-  animation-name: neonBlinkRealistic;
-  animation-duration: 5s; 
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite alternate; 
-  animation-delay: calc(-1s * var(--animation-order)); 
-}
-
-.neon-letter:nth-of-type(1) { --animation-order: 1; }
-.neon-letter:nth-of-type(2) { --animation-order: 2; }
-.neon-letter:nth-of-type(3) { --animation-order: 3; }
-.neon-letter:nth-of-type(4) { --animation-order: 4; } */
