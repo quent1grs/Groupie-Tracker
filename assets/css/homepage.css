@@ -384,19 +384,23 @@ h6 span:last-child{
     -ms-flex-pack: center;
     text-align: center;
     border: none;
-    background-color: #e2bf4c;
-    color: #102770;
+    
     box-shadow: 0 8px 24px 0 rgba(255, 235, 167, .2);
 }
+
+.btndynamics {
+    background-color: #e2bf4c;
+    color: #102770;
+}
  
-.btn:active,
-.btn:focus {
+.btndynamics:active,
+.btndynamics:focus {
     background-color: #102770;
     color: #ffeba7;
     box-shadow: 0 8px 24px 0 rgba(16, 39, 112, .2);
 }
 
-.btn:hover {
+.btndynamics:hover {
     background-color: #102770;
     color: #ffeba7;
     box-shadow: 0 8px 24px 0 rgba(16, 39, 112, .2);
@@ -416,3 +420,18 @@ h6 span:last-child{
     width: auto;
     display: block;
 }
+
+/* Classe associée au bouton de soumission du formulaire dans la page de login/registering.
+Grise le bouton, et le rend figé */
+.disabledbtn {
+    cursor: not-allowed;
+    background-color: #c4c3ca;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+/* .disabled:hover {
+    background-color: #c4c3ca;
+    color: #ffffff;
+    box-shadow: none;
+} */

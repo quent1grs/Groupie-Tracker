@@ -155,3 +155,18 @@ func IsEmailInDB(email string) bool {
 
 	return rows.Next()
 }
+
+func IsPasswordCorrect(identifier string, password string) bool {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	var hashedPassword string
+	err = db.QueryRow("SELECT password FROM USER WHERE username = ? OR email = ?", identifier, identifier).Scan(&hashedPassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return hashedPassword == Hash(password)
+}

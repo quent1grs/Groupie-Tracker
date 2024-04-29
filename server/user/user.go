@@ -3,12 +3,22 @@ package user
 import (
 	"database/sql"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"groupietracker/database"
+	session "groupietracker/server/session"
 	"log"
+	"math"
 	"net/http"
+	"regexp"
 	"strings"
 )
+
+type RequestNameRegisteringBody struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
 type User struct {
 	Id             int
@@ -47,10 +57,12 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 	//Actualiser la page en renvoyant le même fichier HTML
 	// http.ServeFile(w, r, "./home-page.html")
+	// Rediriger vers la route /login
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-
+	// fmt.Println("Login")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -62,12 +74,36 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// emailorUsername := r.FormValue("logemail/logname")
+	emailorUsername := r.FormValue("logemail/loguser")
 	password := r.FormValue("logpass")
 
-	password = database.Hash(password)
+	fmt.Println("Email or username: ", emailorUsername)
+	fmt.Println("Password: ", password)
 
-	http.ServeFile(w, r, "./choosegamepage.html")
+	// // Si les informations de connexion ne sont pas correctes, rediriger vers la page de connexion
+	if !database.IsPasswordCorrect(emailorUsername, password) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	fmt.Println("[DEBUG] Login successful")
+
+	// Si l'utilisateur a pu s'authentifier, créer un cookie et une session
+	cookie := session.IssueCookie(emailorUsername)
+	// Envoyer le cookie au client
+	http.SetCookie(w, &http.Cookie{
+		Name:  "cookie",
+		Value: cookie.CookieID,
+	})
+
+	fmt.Println("[DEBUG] Cookie : ", cookie)
+	fmt.Println("[DEBUG] User : ", emailorUsername)
+
+	session.AddSession(emailorUsername, cookie)
+
+	fmt.Println("[DEBUG] AddSession executed")
+
+	http.Redirect(w, r, "/lobby", http.StatusSeeOther)
 }
 
 func UpdateUser(db *sql.DB, id int, username string, email string, password string) {
@@ -126,17 +162,9 @@ func DecodePassword(password string) string {
 	return string(decoded)
 }
 
-func IsPasswordValid(password string) bool {
-	// Check if password is valid
-	if len(password) < 8 || !strings.ContainsAny(password, "0123456789") || !strings.ContainsAny(password, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") || !strings.ContainsAny(password, "abcdefghijklmnopqrstuvwxyz") || !strings.ContainsAny(password, "!@#$%^&*()_+|~-=`{}[]:;<>?,./") {
-		return false
-	}
-	return true
-}
-
-// Vérifier si le nom d'utilisateur est disponible dans la base de données
+// Vérifier si le nom d'utilisateur est disponible dans la base de données. Cette fonction est appelée par une requête AJAX
 func HandleCheckUsername(w http.ResponseWriter, r *http.Request) {
-	var isUsernameValid bool
+	var requestNameRegisteringBody RequestNameRegisteringBody
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -146,19 +174,23 @@ func HandleCheckUsername(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
 		return
 	}
-	username := r.FormValue("signname")
-
-	if database.IsUsernameInDB(username) {
-		isUsernameValid = false
-	} else {
-		isUsernameValid = true
+	err = json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
 	}
-	fmt.Fprint(w, isUsernameValid)
+	username := requestNameRegisteringBody.Username
+
+	if !database.IsUsernameInDB(username) {
+		fmt.Fprint(w, false)
+	} else {
+		fmt.Fprint(w, true)
+	}
 }
 
 // Vérifier si l'email est disponible dans la base de données
 func HandleCheckEmail(w http.ResponseWriter, r *http.Request) {
-	var isEmailValid bool
+	var requestNameRegisteringBody RequestNameRegisteringBody
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -168,12 +200,108 @@ func HandleCheckEmail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
 		return
 	}
-	email := r.FormValue("signemail")
-
-	if database.IsEmailInDB(email) {
-		isEmailValid = false
-	} else {
-		isEmailValid = true
+	err = json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
 	}
-	fmt.Fprint(w, isEmailValid)
+	email := requestNameRegisteringBody.Email
+	matched, _ := regexp.MatchString("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email)
+
+	if !matched {
+		fmt.Fprint(w, "invalid")
+	} else if !database.IsEmailInDB(email) {
+		fmt.Fprint(w, false)
+	} else {
+		fmt.Fprint(w, true)
+	}
+}
+
+func PasswordEntropy(password string) int {
+	// Calculate password entropy
+	L := len(password)
+	R := getCharsetPool(password)
+	return int(math.Log2(math.Pow(float64(R), float64(L))))
+}
+
+func getCharsetPool(password string) int {
+	// Get the charset pool of the password
+	pool := 0
+	if strings.ContainsAny(password, "0123456789") {
+		pool += 10
+	}
+	if strings.ContainsAny(password, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+		pool += 26
+	}
+	if strings.ContainsAny(password, "abcdefghijklmnopqrstuvwxyz") {
+		pool += 26
+	}
+	if strings.ContainsAny(password, "`~!@#$%^&*()-=_+[{]}\\") {
+		pool += 32
+	}
+	return pool
+}
+
+func HandleIsPasswordValid(w http.ResponseWriter, r *http.Request) {
+	var requestNameRegisteringBody RequestNameRegisteringBody
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
+	}
+	password := requestNameRegisteringBody.Password
+	fmt.Println("Password: ", password)
+	fmt.Println("Password entropy: ", PasswordEntropy(password))
+	if PasswordEntropy(password) >= 60 {
+		fmt.Fprint(w, true)
+	} else {
+		fmt.Fprint(w, false)
+	}
+}
+
+func HandleIsUserInDB(w http.ResponseWriter, r *http.Request) {
+	var requestNameRegisteringBody RequestNameRegisteringBody
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
+	}
+	username := requestNameRegisteringBody.Username
+
+	if database.IsUsernameInDB(username) {
+		fmt.Fprint(w, "username")
+	} else if database.IsEmailInDB(username) {
+		fmt.Fprint(w, "email")
+	} else {
+		fmt.Fprint(w, false)
+	}
+}
+
+func HandleIsPasswordCorrect(w http.ResponseWriter, r *http.Request) {
+	var requestNameRegisteringBody RequestNameRegisteringBody
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
+	}
+	username := requestNameRegisteringBody.Username
+	password := requestNameRegisteringBody.Password
+
+	if database.IsPasswordCorrect(username, password) {
+		fmt.Fprint(w, true)
+	} else {
+		fmt.Fprint(w, false)
+	}
 }
