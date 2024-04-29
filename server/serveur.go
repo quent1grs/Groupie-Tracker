@@ -57,21 +57,21 @@ func main() {
 	fmt.Println(time.Now().String() + " Server is running on port " + PORT)
 
 	// Horloge pour les sessions
-	go func() {
-		for {
-			time.Sleep(1 * time.Second)
-			for _, session := range session.ActiveSessions {
-				if time.Now().Unix()-session.InactiveSince > 360 {
-					fmt.Println("Session inactive depuis 6 minutes. Suppression de la session.")
-					fmt.Println("Session : ", session)
-					// TODO
-				} else {
-					// Incrémenter la variable inactiveSince de chaque session de 1 seconde
-					session.InactiveSince++
-				}
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		time.Sleep(1 * time.Second)
+	// 		for _, session := range session.ActiveSessions {
+	// 			if time.Now().Unix()-session.InactiveSince > 360 {
+	// 				fmt.Println("Session inactive depuis 6 minutes. Suppression de la session.")
+	// 				fmt.Println("Session : ", session)
+	// 				// TODO
+	// 			} else {
+	// 				// Incrémenter la variable inactiveSince de chaque session de 1 seconde
+	// 				session.InactiveSince++
+	// 			}
+	// 		}
+	// 	}
+	// }()
 
 	server := &http.Server{
 		Addr:              *addr,
