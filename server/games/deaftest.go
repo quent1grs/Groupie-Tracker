@@ -6,40 +6,33 @@ import (
 	"net/http"
 )
 
-type PageData struct {
-	Artist string
-	Title  string
-	URL    string
-	Lyrics string
-}
-
-func HandleBlindtest(w http.ResponseWriter, r *http.Request) {
+func HandleDeaftest(w http.ResponseWriter, r *http.Request) {
 	var music spotifyapi.Music
 
 	var artists = music.Artists
 	var titles = music.Titles
-	var musicUrl = music.MusicUrl
+	var musicLyrics = music.MusicLyrics
 
-	i := mrand.Intn(len(musicUrl))
+	i := mrand.Intn(len(musicLyrics))
 
 	data := PageData{
 		Artist: artists[i],
 		Title:  titles[i],
-		URL:    musicUrl[i],
+		Lyrics: musicLyrics[i],
 	}
 
 	if r.Method == http.MethodPost {
-		answer := r.FormValue("blindtest_answer")
+		answer := r.FormValue("deaftest_answer")
 		if answer == data.Title || answer == data.Artist || answer == data.Title+" "+data.Artist || answer == data.Artist+" "+data.Title {
-			musicUrl = append(musicUrl[:i], musicUrl[i+1:]...)
+			musicLyrics = append(musicLyrics[:i], musicLyrics[i+1:]...)
 			titles = append(titles[:i], titles[i+1:]...)
 			artists = append(artists[:i], artists[i+1:]...)
-			i = mrand.Intn(len(musicUrl))
-			data.URL = musicUrl[i]
+			i = mrand.Intn(len(musicLyrics))
+			data.Lyrics = musicLyrics[i]
 			data.Title = titles[i]
 			data.Artist = artists[i]
 		}
-
 	}
-	http.ServeFile(w, r, "./blindtest.html")
+
+	http.ServeFile(w, r, "./deaftest.html")
 }
