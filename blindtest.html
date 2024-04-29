@@ -5,66 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Homepage</title>
         <link rel="stylesheet" href="assets/css/blindtest.css">
-        <style>
-            * {
-                margin : 0;
-                padding : 0;
-            }
-            body {
-                width: 100%;
-                height: 100vh;
-                align-items: center;
-                justify-content: center;
-                display: flex;
-                background-color: aliceblue;
-            }
-            .hide {
-                width: 44.2%;
-                height: 353px;
-                position: absolute;
-                top: 26%;
-                left: 25%;
-                background-color: rgb(226, 166, 166, 0.5);
-                z-index: 2;
-            }
-            .hide2 {
-                width: 5.8%;
-                height: 265px;
-                position: absolute;
-                top: 26%;
-                left: 69.2%;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 2;
-            }
-            .hide3 {
-                width: 5.8%;
-                height: 43px;
-                position: absolute;
-                top: 68.2%;
-                left: 69.2%;
-                background-color: rgba(175, 111, 111, 0.5);
-                z-index: 2;
-            }
-            .hide4 {
-                width: 2.7%;
-                height: 46px;
-                position: absolute;
-                top: 62%;
-                left: 72.3%;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 2;
-            }
-            iframe {
-                position: relative;
-                z-index: 1;
-            }
-            .game {
-                position: absolute;
-                top: 80%;
-                left: center;
-                z-index: 2;
-            }
-            </style>
     </head>
     <body>
         <div class="hide"></div>
@@ -83,7 +23,7 @@
         ></iframe>
         <div class="game">
             <form action="/Nextsong" method="POST">
-                <input type="text" name="answer" placeholder="Enter the song name">
+                <input type="text" name="blindtest_answer" placeholder="Enter the song name">
                 <button type="submit">Submit</button>
             </form>
         </div>

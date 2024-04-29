@@ -128,14 +128,12 @@ func GetToken() string {
 
 	var result map[string]interface{}
 	json.Unmarshal(body, &result)
-
 	return result["access_token"].(string)
 }
 
 func ParsePlaylist(body []byte) {
 	var music Music
 	var playlist SearchResponse
-
 	err := json.Unmarshal(body, &playlist)
 	if err != nil {
 		log.Fatal(err)
@@ -154,5 +152,4 @@ func ParsePlaylist(body []byte) {
 		music.MusicLyrics = append(music.MusicLyrics, lyrics.Body)
 		println("Title: " + title + " Artist: " + artist)
 	}
-
 }

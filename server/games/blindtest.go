@@ -29,7 +29,7 @@ func HandleBlindtest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		answer := r.FormValue("answer")
+		answer := r.FormValue("blindtest_answer")
 		if answer == data.Title || answer == data.Artist || answer == data.Title+" "+data.Artist || answer == data.Artist+" "+data.Title {
 			musicUrl = append(musicUrl[:i], musicUrl[i+1:]...)
 			titles = append(titles[:i], titles[i+1:]...)

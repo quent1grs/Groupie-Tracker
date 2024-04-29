@@ -69,5 +69,5 @@ func main() {
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./home-page.html")
+	http.ServeFile(w, r, "./blindtest.html")
 }
