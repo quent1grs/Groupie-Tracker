@@ -115,38 +115,54 @@ img {
 #item-3:checked ~ .cards #song-3 .card-text {
   display: block;
   animation: fadeIn 2s ease-out; /* Applique l'animation fadeIn sur 1 seconde */
-  animation: cardtexteffect 2s infinite alternate ease-in-out;
+  animation: cardtexteffect 1s infinite alternate ease-in-out;
 }
 
 .hidden-btn {
   position: absolute;
-  bottom: 10px; /* Ajustez cette valeur pour positionner correctement les boutons à l'intérieur de la carte */
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  transition: opacity 0.5s ease;
-  opacity: 0; /* Initialement caché */
-  display: none; /* Assurez-vous que cette propriété est gérée par JavaScript */
-  margin : 0 10px;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  display: none;
+  margin: 0 10px;
+  animation: fadeIn 3s ease-out;
+  background-color: #f2b120; /* Couleur de fond rétro */
+  color: #fff; /* Texte blanc pour contraster avec le fond */
+  border: none;
+  border-radius: 5px; /* Bordures légèrement arrondies */
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive; /* Police rétro */
+  box-shadow: 0 4px #c69c6d; /* Ombre pour donner un effet de bouton pressé */
+  cursor: pointer;
+}
+
+.hidden-btn:hover {
+  background-color: #c69c6d;
+  box-shadow: 0 2px #a67c52;
+  transform: translateX(-50%) translateY(2px); /* Inclut translateX pour maintenir la position horizontale */
 }
 
 .text-up {
   
     transform: translateX(-50%) translateY(-120px); /* Ajoutez translateX(-50%) pour maintenir le centrage horizontal */
-    transition: transform 0.5s ease;
+    transition: transform 1.5s ease;
 }
 
 .btn-show {
+  display: block;
   opacity: 1;
-  transition: opacity 0.5s ease;
+  transition: opacity 3s ease;
 }
 
 #crea {
-  bottom: 90px;
+  bottom: 80px;
   margin: auto;
 }
 
 #join{
-  bottom: 60px;
+  bottom: 30px;
   margin: auto;
 }
 
@@ -210,19 +226,3 @@ img {
 .neon-letter {
   animation: neonEffect 5s infinite alternate ease-in-out;
 }
-
-/*
-.neon-letter {
-  animation: blink 2s infinite alternate;
-
-  animation-name: neonBlinkRealistic;
-  animation-duration: 5s; 
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite alternate; 
-  animation-delay: calc(-1s * var(--animation-order)); 
-}
-
-.neon-letter:nth-of-type(1) { --animation-order: 1; }
-.neon-letter:nth-of-type(2) { --animation-order: 2; }
-.neon-letter:nth-of-type(3) { --animation-order: 3; }
-.neon-letter:nth-of-type(4) { --animation-order: 4; } */

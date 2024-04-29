@@ -40,7 +40,7 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
-	http.HandleFunc("/deaftest", games.HandleDeafTest)
+	// http.HandleFunc("/deaftest", games.HandleDeafTest)
 	http.HandleFunc("/scattegories", games.HandleScattegories)
 	http.HandleFunc("/signup", user.HandleSignup)
 	http.HandleFunc("/login", user.HandleLogin)
@@ -69,5 +69,5 @@ func main() {
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./blindtest.html")
+	http.ServeFile(w, r, "./home-page.html")
 }

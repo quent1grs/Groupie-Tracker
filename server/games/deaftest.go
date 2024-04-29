@@ -35,5 +35,4 @@ func HandleDeaftest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeFile(w, r, "./deaftest.html")
->>>>>>> add513a453f7849bb1c2565ab6c8594b6a534b42
 }
