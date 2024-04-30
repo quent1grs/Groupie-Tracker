@@ -52,6 +52,7 @@ func main() {
 	http.HandleFunc("/checkEmail", user.HandleCheckEmail)       // Nouvelle route : checkEmail (pour vérifier la disponibilité d'un email lors de l'inscription par requête AJAX)
 	http.HandleFunc("/isPasswordValid", user.HandleIsPasswordValid)
 	http.HandleFunc("/lobby", lobby.HandleLobby)
+	http.HandleFunc("/logout", session.HandleLogout)
 
 	fmt.Println(time.Now().String() + " Server is running on port " + PORT)
 
