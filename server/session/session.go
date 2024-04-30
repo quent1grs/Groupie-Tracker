@@ -91,7 +91,6 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("[DEBUG] Cookie: ", cookie)
 
 	// Retire le cookie sur la session locale du client
-	w
 
 	fmt.Println("[DEBUG] Active sessions: ", ActiveSessions)
 	for key, value := range ActiveSessions {
