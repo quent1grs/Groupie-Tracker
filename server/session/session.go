@@ -101,5 +101,11 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("[DEBUG] Active sessions after removal of cookie : ", ActiveSessions)
 	r.Header.Del("Cookie")
+	r.Header.Add("Cookie", "cookie=deleted")
+	fmt.Println("[DEBUG] Cookie after logout: ", r.Header.Get("Cookie"))
+	http.SetCookie(w, &http.Cookie{Name: "cookie", Value: "deleted", MaxAge: -1})
+
+	http.ServeFile(w, r, "./home-page.html")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 }

@@ -16,12 +16,12 @@ func HandleLobby(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !session.IsCookieActive(session.Cookie{CookieID: r.Header.Get("Cookie")}) || !session.IsClientLoggedIn(r) {
-		fmt.Println("Cookie : ", r.Header.Get("Cookie"))
-		fmt.Println("User not logged in. Redirecting to login page.")
+		fmt.Println("[DEBUG] Cookie : ", r.Header.Get("Cookie"))
+		fmt.Println("[DEBUG] User not logged in. Redirecting to login page.")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	} else {
-		fmt.Println("User logged in. Proceeding to lobby.")
+		fmt.Println("[DEBUG] User logged in. Proceeding to lobby.")
 	}
 
 	fmt.Println("Cookie : ", r.Header.Get("Cookie"))
