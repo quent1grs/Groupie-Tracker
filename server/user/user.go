@@ -62,7 +62,6 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println("Login")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -76,17 +75,11 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	emailorUsername := r.FormValue("logemail/loguser")
 	password := r.FormValue("logpass")
-
-	fmt.Println("Email or username: ", emailorUsername)
-	fmt.Println("Password: ", password)
-
 	// // Si les informations de connexion ne sont pas correctes, rediriger vers la page de connexion
 	if !database.IsPasswordCorrect(emailorUsername, password) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-
-	fmt.Println("[DEBUG] Login successful")
 
 	// Si l'utilisateur a pu s'authentifier, créer un cookie et une session
 	cookie := session.IssueCookie(emailorUsername)
@@ -96,12 +89,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Value: cookie.CookieID,
 	})
 
-	fmt.Println("[DEBUG] Cookie : ", cookie)
-	fmt.Println("[DEBUG] User : ", emailorUsername)
-
 	session.AddSession(emailorUsername, cookie)
-
-	fmt.Println("[DEBUG] AddSession executed")
 
 	http.Redirect(w, r, "/lobby", http.StatusSeeOther)
 }
@@ -254,8 +242,6 @@ func HandleIsPasswordValid(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	password := requestNameRegisteringBody.Password
-	fmt.Println("Password: ", password)
-	fmt.Println("Password entropy: ", PasswordEntropy(password))
 	if PasswordEntropy(password) >= 60 {
 		fmt.Fprint(w, true)
 	} else {

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Configuration du Jeu</title>
+</head>
+<body>
+    <header>
+        <!-- Votre en-tête ici -->
+    </header>
+
+    <main>
+        <h1>Configurer les Règles du Jeu</h1>
+        <form action="/demarrerJeu" method="post">
+            <div>
+                <label for="timer">Timer (en secondes) :</label>
+                <input type="number" id="timer" name="timer" min="10" required>
+            </div>
+            <div>
+                <label for="categorie">Catégorie :</label>
+                <select id="categorie" name="categorie">
+                    <option value="instrument">Instrument</option>
+                    <option value="album">Album</option>
+                    <option value="musique">Musique</option>
+                    <option value="groupe">Groupe</option>
+                    <option value="featuring">Featuring</option>
+                </select>
+            </div>
+            <div>
+                <label for="nombreJoueurs">Nombre de joueurs :</label>
+                <input type="number" id="nombreJoueurs" name="nombreJoueurs" min="1" required>
+            </div>
+            <div>
+                <label for="nombreTours">Nombre de tours :</label>
+                <input type="number" id="nombreTours" name="nombreTours" min="1" required>
+            </div>
+            <div>
+                <label>Fin du tour :</label>
+                <input type="radio" id="finTourStop" name="finTour" value="stop" checked>
+                <label for="finTourStop">En appuyant sur stop</label>
+                <input type="radio" id="finTourTimer" name="finTour" value="timer">
+                <label for="finTourTimer">En attendant la fin du timer</label>
+            </div>
+            <button type="submit">Configurer</button>
+        </form>
+    </main>
+
+    <footer>
+        <!-- Votre pied de page ici -->
+    </footer>
+</body>
+</html>

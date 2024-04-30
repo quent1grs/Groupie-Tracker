@@ -1,0 +1,92 @@
+table {
+    border-collapse: collapse; /* Assure que les bordures des cellules se touchent */
+    width: 100%; /* Ajustez selon vos besoins */
+    margin: 20px 0; /* Espacement autour du tableau */
+}
+
+th, td {
+    border: 1px solid #ddd; /* Couleur de bordure pour les cellules et en-têtes */
+    text-align: left; /* Alignement du texte dans les cellules */
+    padding: 8px; /* Espacement autour du texte dans les cellules */
+}
+
+th {
+    background-color: #f2f2f2; /* Couleur de fond pour les en-têtes */
+    color: #333; /* Couleur du texte pour les en-têtes */
+}
+
+/* Style pour améliorer l'apparence des boutons */
+button {
+    background-color: #4CAF50; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    padding: 10px 20px; /* Espacement autour du texte */
+    margin: 10px; /* Espacement autour du bouton */
+    border: none; /* Aucune bordure */
+    cursor: pointer; /* Change le curseur en main */
+}
+
+button:hover {
+    background-color: #45a049; /* Couleur de fond au survol */
+}
+
+#reponseForm {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#reponseForm h2 {
+    margin-bottom: 15px;
+}
+
+#reponseForm form {
+    display: inline-block;
+    text-align: left;
+}
+
+#reponseForm input[type="text"] {
+    padding: 8px;
+    margin-right: 10px;
+    width: 300px; /* Ajustez selon vos besoins */
+    border: 1px solid #ddd;
+}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+header nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+header nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 0px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer a {
+    color: #fff;
+    text-decoration: none;
+}
