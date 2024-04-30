@@ -34,5 +34,5 @@ func HandleDeaftest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	http.ServeFile(w, r, "pages/deaftest.html")
+	http.ServeFile(w, r, "./deaftest.html")
 }
