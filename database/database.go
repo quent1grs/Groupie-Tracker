@@ -157,16 +157,65 @@ func IsEmailInDB(email string) bool {
 }
 
 func IsPasswordCorrect(identifier string, password string) bool {
+	if identifier == "" || password == "" {
+		return false
+	}
+	if !IsUsernameInDB(identifier) && !IsEmailInDB(identifier) {
+		return false
+	}
+
 	db, err := sql.Open("sqlite3", "./database/db.sqlite")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
+	// var comparedIdentifier string
 	var hashedPassword string
+	var idOfRow int
 	err = db.QueryRow("SELECT password FROM USER WHERE username = ? OR email = ?", identifier, identifier).Scan(&hashedPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return hashedPassword == Hash(password)
+	err = db.QueryRow("SELECT id FROM USER WHERE username = ? OR email = ?", identifier, identifier).Scan(&idOfRow)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Identifier : ", identifier)
+	fmt.Println("Identifier in DB : ", idOfRow)
+
+	// Si identifier ne correspond pas à l'username ou à l'email, on renvoit false
+	if !isIdentifierPresentInTheRow(identifier, hashedPassword, idOfRow) {
+		return false
+	}
+
+	var comparedPassword string
+	err = db.QueryRow("SELECT password FROM USER WHERE id = ?", idOfRow).Scan(&comparedPassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Compared password : ", comparedPassword)
+
+	return Hash(password) == comparedPassword
+}
+
+func isIdentifierPresentInTheRow(identifier string, hashedPassword string, id int) bool {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var comparedUsername string
+	var comparedEmail string
+	err = db.QueryRow("SELECT username FROM USER WHERE id = ?", id).Scan(&comparedUsername)
+	fmt.Println("Compared identifier : ", comparedUsername)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = db.QueryRow("SELECT email FROM USER WHERE id = ?", id).Scan(&comparedEmail)
+	fmt.Println("Compared email : ", comparedEmail)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return comparedUsername == identifier || comparedEmail == identifier
 }

@@ -15,9 +15,10 @@ import (
 )
 
 type RequestNameRegisteringBody struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Password2 string `json:"password2"`
 }
 
 type User struct {
@@ -31,7 +32,7 @@ type User struct {
 }
 
 // Ajout d'un utilisateur à la base de données
-func HandleSignup(w http.ResponseWriter, r *http.Request) {
+func HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -49,15 +50,26 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 
 	password = database.Hash(password)
 
+	if database.IsUsernameInDB(username) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if database.IsEmailInDB(email) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if PasswordEntropy(password) < 60 {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	// Insérer les données dans la base de données en appelant la fonction existante
 	err = database.InsertFormData(email, username, password)
 	if err != nil {
 		http.Error(w, "Erreur lors de l'insertion des données dans la base de données", http.StatusInternalServerError)
 		return
 	}
-	//Actualiser la page en renvoyant le même fichier HTML
-	// http.ServeFile(w, r, "./home-page.html")
-	// Rediriger vers la route /login
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -77,16 +89,11 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	emailorUsername := r.FormValue("logemail/loguser")
 	password := r.FormValue("logpass")
 
-	fmt.Println("Email or username: ", emailorUsername)
-	fmt.Println("Password: ", password)
-
 	// // Si les informations de connexion ne sont pas correctes, rediriger vers la page de connexion
 	if !database.IsPasswordCorrect(emailorUsername, password) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-
-	fmt.Println("[DEBUG] Login successful")
 
 	// Si l'utilisateur a pu s'authentifier, créer un cookie et une session
 	cookie := session.IssueCookie(emailorUsername)
@@ -96,14 +103,33 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Value: cookie.CookieID,
 	})
 
-	fmt.Println("[DEBUG] Cookie : ", cookie)
-	fmt.Println("[DEBUG] User : ", emailorUsername)
-
 	session.AddSession(emailorUsername, cookie)
 
-	fmt.Println("[DEBUG] AddSession executed")
-
 	http.Redirect(w, r, "/lobby", http.StatusSeeOther)
+}
+
+func HandleLoginControl(w http.ResponseWriter, r *http.Request) {
+	var requestNameRegisteringBody RequestNameRegisteringBody
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
+	}
+	var identifier string
+	if requestNameRegisteringBody.Email != "" {
+		identifier = requestNameRegisteringBody.Email
+	} else {
+		identifier = requestNameRegisteringBody.Username
+	}
+	if database.IsPasswordCorrect(identifier, requestNameRegisteringBody.Password) {
+		fmt.Fprint(w, true)
+	} else {
+		fmt.Fprint(w, false)
+	}
 }
 
 func UpdateUser(db *sql.DB, id int, username string, email string, password string) {
@@ -160,6 +186,45 @@ func DecodePassword(password string) string {
 		log.Fatal(err)
 	}
 	return string(decoded)
+}
+
+func HandleRegisterControl(w http.ResponseWriter, r *http.Request) {
+	// Fusionne l'ensemble des processus du contrôle d'inscription
+	var requestNameRegisteringBody RequestNameRegisteringBody
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&requestNameRegisteringBody)
+	if err != nil {
+		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
+		return
+	}
+	username := requestNameRegisteringBody.Username
+	email := requestNameRegisteringBody.Email
+	password := requestNameRegisteringBody.Password
+	password2 := requestNameRegisteringBody.Password2
+	matched, _ := regexp.MatchString("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email)
+	switch {
+	case database.IsUsernameInDB(username):
+		fmt.Fprint(w, "usernameInDB")
+	case username == "":
+		fmt.Fprint(w, "userEmpty")
+	case database.IsEmailInDB(email):
+		fmt.Fprint(w, "emailInDB")
+	case !matched:
+		fmt.Fprint(w, "emailInvalid")
+	case email == "":
+		fmt.Fprint(w, "emailEmpty")
+	case PasswordEntropy(password) < 60:
+		fmt.Fprint(w, "passwordEntropy")
+	case password == "":
+		fmt.Fprint(w, "passwordEmpty")
+	case password != password2:
+		fmt.Fprint(w, "passwordMismatchError")
+	default:
+		fmt.Fprint(w, true)
+	}
 }
 
 // Vérifier si le nom d'utilisateur est disponible dans la base de données. Cette fonction est appelée par une requête AJAX
@@ -254,8 +319,6 @@ func HandleIsPasswordValid(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	password := requestNameRegisteringBody.Password
-	fmt.Println("Password: ", password)
-	fmt.Println("Password entropy: ", PasswordEntropy(password))
 	if PasswordEntropy(password) >= 60 {
 		fmt.Fprint(w, true)
 	} else {

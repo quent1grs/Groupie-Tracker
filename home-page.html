@@ -28,7 +28,7 @@
                                     <div class="center-wrap">
                                         <div class="section text-center">
                                             <h4 id="loginh4" class="mb-4 pb-3">Log In</h4>
-                                            <form action="/login" method="POST">
+                                            <form action="/login" method="POST" id="logForm">
                                                 <div class="form-group">
                                                     <input type="text" name="logemail/loguser" class="form-style" placeholder="Your Email / Username" id="logemail" autocomplete="off" required>
                                                     <i class="input-icon uil uil-at"></i>
@@ -39,7 +39,7 @@
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <div id="wrongPasswordError" class="error" style="color: red;"></div>
                                                 </div>     
-                                                <button type="submit" id="logsubmit" class="btn mt-4 btndynamics">Log In</button>                                   
+                                                <button type="submit" id="logsubmit" class="btn mt-4 disabled" disabled>Log In</button>                                   
                                                 <p id="Forgot" class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your password?</a></p>
                                             </form>
                                         </div>
@@ -49,8 +49,7 @@
                                     <div class="center-wrap">
                                         <div class="section text-center">
                                             <h4 id="signuph4" class="mb-4 pb-3">Sign Up</h4>
-                                            <!-- Formulaire d'inscription. Envoie les données à la fonction JS pour vérification, puis à la base de données si tout est correct -->
-                                            <form action="/signup" method="POST">
+                                            <form method="POST" id="registerForm" action="/register">
                                                 <div class="form-group">
                                                     <input type="text" name="signname" class="form-style" placeholder="Username"  id="signname" autocomplete="off" required>
                                                     <i class="input-icon uil uil-user"></i>
@@ -71,7 +70,7 @@
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <div id="passwordMismatchError" class="error" style="color: red;"></div>  
                                                 </div>
-                                                <button type="submit" id="signsubmit" class="btn mt-4 btndynamics">Sign Up</button>
+                                                <button id="signsubmit" class="btn mt-4 btndynamics" type="button">Sign Up</button>
                                             </form>     
                                         </div>
                                     </div>
@@ -88,146 +87,113 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('logemail').addEventListener('input', function() {
-            var username = document.getElementById('logemail').value
-            $.ajax({
-                url: '/isUserInDB', 
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({username: username}),
-                success: function(response) {
-                    if (response === false || response === 'false' || (response !== 'email' && response !== 'username')) {
-                        console.log("User doesn't exist.")
-                        document.getElementById('notAnUserError').textContent = 'Cet utilisateur n\'existe pas.';
-                        document.getElementById('logsubmit').classList.add('disabled');
-                        document.getElementById('logsubmit').classList.remove('btndynamics');
-                        document.getElementById('logsubmit').disabled = true;
-                    } else {
-                        console.log("User exists.")
-                        document.getElementById('notAnUserError').textContent = '';
-                        document.getElementById('logsubmit').classList.remove('disabled');
-                        document.getElementById('logsubmit').classList.add('btndynamics');
-                        document.getElementById('logsubmit').disabled = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById(('logemail')).addEventListener('input', function() {
+                event.preventDefault();
+                var username = document.getElementById('logemail').value;
+                var password = document.getElementById('logpass').value;
+                $.ajax({
+                    url: '/loginControl',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({username: username, password: password}),
+                    success: function(response) {
+                        if (response === 'true') {
+                            document.getElementById('wrongPasswordError').textContent = '';
+                            document.getElementById('logsubmit').classList.remove('disabled');
+                            document.getElementById('logsubmit').classList.add('btndynamics');
+                            document.getElementById('logsubmit').disabled = false;
+                        } else {
+                            document.getElementById('wrongPasswordError').textContent = 'Identifiants incorrects.';
+                            document.getElementById('logsubmit').classList.add('disabled');
+                            document.getElementById('logsubmit').classList.remove('btndynamics');
+                            document.getElementById('logsubmit').disabled = true;
+                        }
                     }
-                }
+                });
             });
-        })
-
-        document.getElementById('logpass').addEventListener('input', function() {
-            var password = document.getElementById('logpass').value
-            $.ajax({
-                url: '/isPasswordCorrect', 
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({password: password, username: document.getElementById('logemail').value}),
-                success: function(response) {
-                    if (response === 'false') {
-                        console.log("Wrong password.")
-                        document.getElementById('wrongPasswordError').textContent = 'Le mot de passe est incorrect.';
-                        document.getElementById('logsubmit').classList.add('disabled');
-                        document.getElementById('logsubmit').classList.remove('btndynamics');
-                        document.getElementById('logsubmit').disabled = true;
-                    } else {
-                        console.log("Correct password.")
-                        document.getElementById('wrongPasswordError').textContent = '';
-                        document.getElementById('logsubmit').classList.remove('disabled');
-                        document.getElementById('logsubmit').classList.add('btndynamics');
-                        document.getElementById('logsubmit').disabled = false;
+            document.getElementById(('logpass')).addEventListener('input', function() {
+                event.preventDefault();
+                var username = document.getElementById('logemail').value;
+                var password = document.getElementById('logpass').value;
+                $.ajax({
+                    url: '/loginControl',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({username: username, password: password}),
+                    success: function(response) {
+                        if (response === 'true') {
+                            document.getElementById('wrongPasswordError').textContent = '';
+                            document.getElementById('logsubmit').classList.remove('disabled');
+                            document.getElementById('logsubmit').classList.add('btndynamics');
+                            document.getElementById('logsubmit').disabled = false;
+                        } else {
+                            document.getElementById('wrongPasswordError').textContent = 'Identifiants incorrects.';
+                            document.getElementById('logsubmit').classList.add('disabled');
+                            document.getElementById('logsubmit').classList.remove('btndynamics');
+                            document.getElementById('logsubmit').disabled = true;
+                        }
                     }
-                }
+                });
             });
-        });
 
-        document.getElementById('signname').addEventListener('input', function() {
-            var username = document.getElementById('signname').value
-            $.ajax({
-                url: '/checkUsername', 
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({username: username}),
-                success: function(response) {
-                    if (response === 'true') {
-                        document.getElementById('usernameUsedError').textContent = 'Ce nom d\'utilisateur est déjà utilisé.';
-                        document.getElementById('signsubmit').classList.add('disabled');
-                        document.getElementById('signsubmit').classList.remove('btndynamics');
-                        document.getElementById('signsubmit').disabled = true;
-                    } else {
+            ///////////////////////////////////////
+            // DEMARCATION SCRIPT REGISTER/LOGIN //
+            ///////////////////////////////////////
+            
+
+            document.getElementById('signsubmit').addEventListener('click', function() {
+                console.log('registering');
+                var username = document.getElementById('signname').value
+                var email = document.getElementById('signemail').value
+                var password = document.getElementById('signpass').value
+                var password2 = document.getElementById('signpass2').value
+                
+                $.ajax({
+                    url: '/registerControl',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({username: username, email: email, password: password, password2: password2}),
+                    success: function(response) {
                         document.getElementById('usernameUsedError').textContent = '';
-                        document.getElementById('signsubmit').classList.remove('disabled');
-                        document.getElementById('signsubmit').classList.add('btndynamics');
-                        document.getElementById('signsubmit').disabled = false;
-                    }
-                }
-            });
-        });
-
-        document.getElementById('signemail').addEventListener('input', function() {
-            var email = document.getElementById('signemail').value
-            $.ajax({
-                url: '/checkEmail', 
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({email: email}),
-                success: function(response) {
-                    if (response === 'invalid') {
-                        document.getElementById('emailUsedError').textContent = 'Une adresse e-mail valide est requise.';
-                        document.getElementById('signsubmit').classList.add('disabled');
-                        document.getElementById('signsubmit').classList.remove('btndynamics');
-                        document.getElementById('signsubmit').disabled = true;
-                    } else if (response === 'true') {
-                        document.getElementById('emailUsedError').textContent = 'Cet e-mail est déjà utilisé.';
-                        document.getElementById('signsubmit').classList.add('disabled');
-                        document.getElementById('signsubmit').classList.remove('btndynamics');
-                        document.getElementById('signsubmit').disabled = true;
-                    } else {
                         document.getElementById('emailUsedError').textContent = '';
-                        document.getElementById('signsubmit').classList.remove('disabled');
-                        document.getElementById('signsubmit').classList.add('btndynamics');
-                        document.getElementById('signsubmit').disabled = false;
-                    }
-                }
-            });
-        });
-
-        document.getElementById('signpass').addEventListener('input', function() {
-            var password = document.getElementById('signpass').value
-            $.ajax({
-                url: '/isPasswordValid', 
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({password: password}),
-                success: function(response) {
-                    if (response === 'false') {
-                        document.getElementById('passwordConformityError').textContent = 'Le mot de passe n\'est pas assez complexe.';
-                        document.getElementById('signsubmit').classList.add('disabled');
-                        document.getElementById('signsubmit').classList.remove('btndynamics');
-                        document.getElementById('signsubmit').disabled = true;
-                    } else {
                         document.getElementById('passwordConformityError').textContent = '';
-                        document.getElementById('signsubmit').classList.remove('disabled');
-                        document.getElementById('signsubmit').classList.add('btndynamics');
-                        document.getElementById('signsubmit').disabled = false;
+                        document.getElementById('passwordMismatchError').textContent = '';
+                        
+                        if (response === 'usernameInDB') {
+                            document.getElementById('usernameUsedError').textContent = 'Ce nom d\'utilisateur est déjà utilisé.';
+                        }
+                        if (response === 'userEmpty') {
+                            document.getElementById('usernameUsedError').textContent = 'Le nom d\'utilisateur ne peut pas être vide.';
+                        }
+                        if (response === 'emailInDB') {
+                            document.getElementById('emailUsedError').textContent = 'Cet e-mail est déjà utilisé.';
+                        }
+                        if (response === 'emailInvalid') {
+                            document.getElementById('emailUsedError').textContent = 'Une adresse e-mail valide est requise.';
+                        }
+                        if (response === 'emailEmpty') {
+                            document.getElementById('emailUsedError').textContent = 'L\'adresse e-mail ne peut pas être vide.';
+                        }
+                        if (response === 'passwordEntropy') {
+                            document.getElementById('passwordConformityError').textContent = 'Le mot de passe n\'est pas assez complexe.';
+                        }
+                        if (response === 'passwordEmpty') {
+                            document.getElementById('passwordConformityError').textContent = 'Le mot de passe ne peut pas être vide.';
+                        }
+                        if (response === 'passwordMismatchError') {
+                            document.getElementById('passwordMismatchError').textContent = 'Les mots de passe ne correspondent pas.';
+                        } 
+                        if (response === 'true') {
+                            document.getElementById('usernameUsedError').textContent = '';
+                            document.getElementById('emailUsedError').textContent = '';
+                            document.getElementById('passwordConformityError').textContent = '';
+                            document.getElementById('passwordMismatchError').textContent = '';
+                            document.getElementById('registerForm').submit();
+                        }
                     }
-                }
+                });
             });
         });
-
-        document.getElementById('signpass2').addEventListener('input', function() {
-            var password = document.getElementById('signpass').value
-            var password2 = document.getElementById('signpass2').value
-            if (password !== password2) {
-                document.getElementById('passwordMismatchError').textContent = 'Les mots de passe ne correspondent pas.';
-                document.getElementById('signsubmit').classList.add('disabled');
-                document.getElementById('signsubmit').classList.remove('btndynamics');
-                document.getElementById('signsubmit').disabled = true;
-            } else {
-                document.getElementById('passwordMismatchError').textContent = '';
-                document.getElementById('signsubmit').classList.remove('disabled');
-                document.getElementById('signsubmit').classList.add('btndynamics');
-                document.getElementById('signsubmit').disabled = false;
-            }
-        });
-    });
     </script>
 </html>
