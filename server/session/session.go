@@ -15,7 +15,8 @@ const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const cookieSize = 20
 
 type Cookie struct {
-	CookieID string
+	Username    string
+	CookieToken string
 }
 
 type Session struct {
@@ -25,7 +26,7 @@ type Session struct {
 }
 
 func IssueCookie(username string) Cookie {
-	return Cookie{CookieID: generateCookieID()}
+	return Cookie{CookieToken: generateCookieID(), Username: username}
 }
 
 func IsCookieActive(cookie Cookie) bool {
@@ -36,7 +37,7 @@ func IsCookieActive(cookie Cookie) bool {
 	for _, c := range ActiveSessions {
 		// fmt.Println("Current from-list Cookie ID: ", c.Cookie.CookieID)
 		// fmt.Println("Examined Cookie ID: ", cookie.CookieID)
-		if "cookie="+c.Cookie.CookieID == cookie.CookieID {
+		if "cookie="+c.Cookie.CookieToken == cookie.CookieToken {
 			fmt.Println("[DEBUG] Cookie is active.")
 			return true
 		}
@@ -61,7 +62,7 @@ func IsClientLoggedIn(r *http.Request) bool {
 	cookie := r.Header.Get("Cookie")
 	fmt.Println("[DEBUG] Cookie: ", cookie)
 
-	yesNo := IsCookieActive(Cookie{CookieID: cookie})
+	yesNo := IsCookieActive(Cookie{CookieToken: cookie})
 	if yesNo == true {
 		fmt.Println("[DEBUG] Client is logged in.")
 	} else {
@@ -95,7 +96,7 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("[DEBUG] Active sessions: ", ActiveSessions)
 	for key, value := range ActiveSessions {
 		fmt.Println("[DEBUG] Key:", key, "Value:", value)
-		if "cookie="+value.Cookie.CookieID == cookie {
+		if "cookie="+value.Cookie.CookieToken == cookie {
 			delete(ActiveSessions, key)
 		}
 	}

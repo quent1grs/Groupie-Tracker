@@ -97,7 +97,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 func IsCookieActive(cookie session.Cookie) bool {
 	for _, c := range session.ActiveSessions {
-		if c.Cookie.CookieID == cookie.CookieID {
+		if c.Cookie.CookieToken == cookie.CookieToken {
 			return true
 		}
 	}

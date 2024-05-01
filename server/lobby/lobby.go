@@ -7,15 +7,19 @@ import (
 )
 
 func HandleLobby(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("[DEBUG] Objet w : ", w)
+	fmt.Println("[DEBUG] Objet r : ", r)
 	if r.URL.Path != "/lobby" {
+		fmt.Println("[DEBUG] 404 not found.")
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
 	}
 	if r.Method != http.MethodGet {
+		fmt.Println("[DEBUG] Invalid request method.")
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	if !session.IsCookieActive(session.Cookie{CookieID: r.Header.Get("Cookie")}) || !session.IsClientLoggedIn(r) {
+	if !session.IsCookieActive(session.Cookie{CookieToken: r.Header.Get("Cookie")}) || !session.IsClientLoggedIn(r) {
 		fmt.Println("[DEBUG] Cookie : ", r.Header.Get("Cookie"))
 		fmt.Println("[DEBUG] User not logged in. Redirecting to login page.")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
