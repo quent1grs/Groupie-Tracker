@@ -42,6 +42,7 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
+	http.HandleFunc("/deaftest", games.HandleDeaftest)
 	http.HandleFunc("/scattegories", games.HandleScattegories)
 	http.HandleFunc("/register", user.HandleRegister)
 	http.HandleFunc("/login", user.HandleLogin)
@@ -92,7 +93,7 @@ func main() {
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./home-page.html")
+	http.ServeFile(w, r, "pages/home-page.html")
 }
 
 func IsCookieActive(cookie session.Cookie) bool {
