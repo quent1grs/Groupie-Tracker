@@ -2,16 +2,22 @@
 
 * {
   box-sizing: border-box;
+  overflow: hidden; /* Hide scrollbars */
 }
 
 #bg-video {
-  position: absolute; /* osu absolute selon le besoin */
+  position: fixed; /* osu absolute selon le besoin */ /* Loïc : ait modifié de absolute à fixed, 01/05/2024 */
+  top: 0;
+  left: 0;
   right: 0;
   bottom: 0;
-  min-height: 90%; 
-  max-width: 120% ;
-  max-height:120%;
-  min-height: 90%;
+  min-height: 100%; 
+  /* max-width: 120% ;
+  max-height:120%; */
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
   z-index: -100; /* Assurez-vous que la vidéo reste en arrière-plan */
 }
 
@@ -20,6 +26,10 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 body {
@@ -174,6 +184,7 @@ img {
   cursor: pointer;
   padding: 0;
   display: inline-block;
+  bottom: 0;
 }
 
 .neon {

@@ -41,5 +41,5 @@ func HandleBlindtest(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	http.ServeFile(w, r, "./pages/blindtest.html")
+	http.ServeFile(w, r, "pages/blindtest.html")
 }

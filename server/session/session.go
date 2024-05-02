@@ -3,6 +3,7 @@ package session
 import (
 	"fmt"
 	"math/rand"
+	"net/http"
 	// "groupietracker/server"
 )
 
@@ -14,7 +15,8 @@ const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const cookieSize = 20
 
 type Cookie struct {
-	CookieID string
+	Username    string
+	CookieToken string
 }
 
 type Session struct {
@@ -24,20 +26,23 @@ type Session struct {
 }
 
 func IssueCookie(username string) Cookie {
-	return Cookie{CookieID: generateCookieID()}
+	return Cookie{CookieToken: generateCookieID(), Username: username}
 }
 
 func IsCookieActive(cookie Cookie) bool {
 	// Check if the cookie is in the activeCookies map
 	// If it is, return true
 	// If it isn't, return false
+	fmt.Println("[DEBUG] Cookie to check: ", cookie)
 	for _, c := range ActiveSessions {
 		// fmt.Println("Current from-list Cookie ID: ", c.Cookie.CookieID)
 		// fmt.Println("Examined Cookie ID: ", cookie.CookieID)
-		if "cookie="+c.Cookie.CookieID == cookie.CookieID {
+		if "cookie="+c.Cookie.CookieToken == cookie.CookieToken {
+			fmt.Println("[DEBUG] Cookie is active.")
 			return true
 		}
 	}
+	fmt.Println("[DEBUG] Cookie is not active.")
 	return false
 }
 
@@ -50,17 +55,21 @@ func generateCookieID() string {
 	return string(b)
 }
 
-// func IsClientLoggedIn(cookie Cookie) bool {
-// 	// Check if the cookie is in the activeCookies map
-// 	// If it is, return true
-// 	// If it isn't, return false
-// 	for _, c := range activeCookies {
-// 		if c.CookieID == cookie.CookieID {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
+func IsClientLoggedIn(r *http.Request) bool {
+	// Check if the client is logged in
+	// If the client is logged in, return true
+	// If the client is not logged in, return false
+	cookie := r.Header.Get("Cookie")
+	fmt.Println("[DEBUG] Cookie: ", cookie)
+
+	yesNo := IsCookieActive(Cookie{CookieToken: cookie})
+	if yesNo == true {
+		fmt.Println("[DEBUG] Client is logged in.")
+	} else {
+		fmt.Println("[DEBUG] Client is not logged in.")
+	}
+	return yesNo
+}
 
 func AddSession(username string, cookie Cookie) {
 	// Add the session to the ActiveSessions map
@@ -74,5 +83,30 @@ func AddSession(username string, cookie Cookie) {
 	for key, value := range ActiveSessions {
 		fmt.Println("Key:", key, "Value:", value)
 	}
+
+}
+
+func HandleLogout(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("[DEBUG] Handling logout.")
+	cookie := r.Header.Get("Cookie")
+	fmt.Println("[DEBUG] Cookie: ", cookie)
+
+	// Retire le cookie sur la session locale du client
+
+	fmt.Println("[DEBUG] Active sessions: ", ActiveSessions)
+	for key, value := range ActiveSessions {
+		fmt.Println("[DEBUG] Key:", key, "Value:", value)
+		if "cookie="+value.Cookie.CookieToken == cookie {
+			delete(ActiveSessions, key)
+		}
+	}
+	fmt.Println("[DEBUG] Active sessions after removal of cookie : ", ActiveSessions)
+	r.Header.Del("Cookie")
+	r.Header.Add("Cookie", "cookie=deleted")
+	fmt.Println("[DEBUG] Cookie after logout: ", r.Header.Get("Cookie"))
+	http.SetCookie(w, &http.Cookie{Name: "cookie", Value: "deleted", MaxAge: -1})
+
+	http.ServeFile(w, r, "./home-page.html")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 }

@@ -42,35 +42,37 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
+	http.HandleFunc("/deaftest", games.HandleDeaftest)
 	http.HandleFunc("/scattegories", games.HandleScattegories)
 	http.HandleFunc("/register", user.HandleRegister)
 	http.HandleFunc("/login", user.HandleLogin)
 	http.HandleFunc("/loginControl", user.HandleLoginControl)
 	http.HandleFunc("/registerControl", user.HandleRegisterControl)
 	http.HandleFunc("/", handleHome)
-	http.HandleFunc("/checkUsername", user.HandleCheckUsername)
-	http.HandleFunc("/checkEmail", user.HandleCheckEmail)
+	http.HandleFunc("/checkUsername", user.HandleCheckUsername) // Nouvelle route : checkUsername (pour vérifier la disponibilité d'un nom d'utilisateur lors de l'inscription par requête AJAX)
+	http.HandleFunc("/checkEmail", user.HandleCheckEmail)       // Nouvelle route : checkEmail (pour vérifier la disponibilité d'un email lors de l'inscription par requête AJAX)
 	http.HandleFunc("/isPasswordValid", user.HandleIsPasswordValid)
 	http.HandleFunc("/lobby", lobby.HandleLobby)
+	http.HandleFunc("/logout", session.HandleLogout)
 
 	fmt.Println(time.Now().String() + " Server is running on port " + PORT)
 
 	// Horloge pour les sessions
-	go func() {
-		for {
-			time.Sleep(1 * time.Second)
-			for _, session := range session.ActiveSessions {
-				if time.Now().Unix()-session.InactiveSince > 360 {
-					fmt.Println("Session inactive depuis 6 minutes. Suppression de la session.")
-					fmt.Println("Session : ", session)
-					// TODO
-				} else {
-					// Incrémenter la variable inactiveSince de chaque session de 1 seconde
-					session.InactiveSince++
-				}
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		time.Sleep(1 * time.Second)
+	// 		for _, session := range session.ActiveSessions {
+	// 			if time.Now().Unix()-session.InactiveSince > 360 {
+	// 				fmt.Println("Session inactive depuis 6 minutes. Suppression de la session.")
+	// 				fmt.Println("Session : ", session)
+	// 				// TODO
+	// 			} else {
+	// 				// Incrémenter la variable inactiveSince de chaque session de 1 seconde
+	// 				session.InactiveSince++
+	// 			}
+	// 		}
+	// 	}
+	// }()
 
 	server := &http.Server{
 		Addr:              *addr,
@@ -89,13 +91,14 @@ func main() {
 	database.Database()
 
 }
+
 func handleHome(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "pages/home-page.html")
 }
 
 func IsCookieActive(cookie session.Cookie) bool {
 	for _, c := range session.ActiveSessions {
-		if c.Cookie.CookieID == cookie.CookieID {
+		if c.Cookie.CookieToken == cookie.CookieToken {
 			return true
 		}
 	}

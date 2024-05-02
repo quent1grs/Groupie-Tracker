@@ -74,6 +74,7 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
+	// fmt.Println("Login")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -99,7 +100,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	// Envoyer le cookie au client
 	http.SetCookie(w, &http.Cookie{
 		Name:  "cookie",
-		Value: cookie.CookieID,
+		Value: cookie.CookieToken,
 	})
 
 	session.AddSession(emailorUsername, cookie)
