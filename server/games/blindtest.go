@@ -68,23 +68,6 @@ func BlindtestWs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	_, message, err := conn.ReadMessage()
-	if err != nil {
-		log.Println("Error reading message:", err)
-		return
-	}
-
-	if string(message) == "start_music" {
-		// Envoyer un message à tous les clients pour leur dire de démarrer la musique
-		for _, client := range clients {
-			err = client.WriteMessage(websocket.TextMessage, []byte("start_music"))
-			if err != nil {
-				log.Println("Error writing message:", err)
-				continue
-			}
-		}
-	}
-
 	err = conn.WriteMessage(websocket.TextMessage, jsonData)
 	if err != nil {
 		log.Println(err)
@@ -107,30 +90,53 @@ func BlindtestWs(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
+		if string(message) == "start_music" {
+			for _, client := range clients {
+				err = client.WriteMessage(websocket.TextMessage, []byte("start_music"))
+				if err != nil {
+					log.Println("write:", err)
+					continue
+				}
+			}
+		}
+
+		if string(message) == "end_music" {
+			for _, client := range clients {
+				err = client.WriteMessage(websocket.TextMessage, []byte("end_music"))
+				if err != nil {
+					log.Println("write:", err)
+					continue
+				}
+			}
+		}
+
+		if string(message) == "answer" {
+			userResponse := string(message)
+			var response map[string]string
+			if userResponse == currentMusic.Artist || userResponse == currentMusic.Title || userResponse == currentMusic.Artist+currentMusic.Title || userResponse == currentMusic.Title+currentMusic.Artist {
+				response = map[string]string{
+					"message": "Correct!",
+				}
+			} else {
+				response = map[string]string{
+					"message": "Incorrect!",
+				}
+			}
+
+			jsonData, err := json.Marshal(response)
+			if err != nil {
+				log.Println("Error marshalling response:", err)
+				return
+			}
+
+			err = conn.WriteMessage(websocket.TextMessage, jsonData)
+			if err != nil {
+				log.Println("Error writing message:", err)
+				break
+			}
+		}
+
 		log.Println("Received message:", string(message))
 
-		userResponse := string(message)
-		var response map[string]string
-		if userResponse == currentMusic.Artist || userResponse == currentMusic.Title || userResponse == currentMusic.Artist+currentMusic.Title || userResponse == currentMusic.Title+currentMusic.Artist {
-			response = map[string]string{
-				"message": "Correct!",
-			}
-		} else {
-			response = map[string]string{
-				"message": "Incorrect!",
-			}
-		}
-
-		jsonData, err := json.Marshal(response)
-		if err != nil {
-			log.Println("Error marshalling response:", err)
-			return
-		}
-
-		err = conn.WriteMessage(websocket.TextMessage, jsonData)
-		if err != nil {
-			log.Println("Error writing message:", err)
-			break
-		}
 	}
 }

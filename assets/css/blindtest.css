@@ -21,3 +21,7 @@ body {
     position: absolute;
     align-items: right;
 }
+
+audio {
+    display: none;
+}
