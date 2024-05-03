@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"path"
 	"strings"
 
 	mm "github.com/fr05t1k/musixmatch"
@@ -16,10 +15,10 @@ import (
 )
 
 type Music struct {
-	Artists     []string
-	Titles      []string
-	MusicUrl    []string
-	MusicLyrics []string
+	Artists      []string
+	Titles       []string
+	MusicPreview []string
+	MusicLyrics  []string
 }
 
 type Track struct {
@@ -28,6 +27,7 @@ type Track struct {
 	Artists      []Artist     `json:"artists"`
 	Genres       []Genres     `json:"genres"`
 	ExternalUrls ExternalUrls `json:"external_urls"`
+	Preview      string       `json:"preview_url"`
 }
 
 type Genres struct {
@@ -55,6 +55,10 @@ type SearchResponse struct {
 
 type Album struct {
 	Name string `json:"name"`
+}
+
+type Preview struct {
+	Preview string `json:"preview_url"`
 }
 
 type LyricsBody struct {
@@ -131,7 +135,7 @@ func GetToken() string {
 	return result["access_token"].(string)
 }
 
-func ParsePlaylist(body []byte) {
+func ParsePlaylist(body []byte) Music {
 	var music Music
 	var playlist SearchResponse
 	err := json.Unmarshal(body, &playlist)
@@ -140,8 +144,7 @@ func ParsePlaylist(body []byte) {
 	}
 
 	for _, item := range playlist.Tracks.Items {
-		uri := path.Base(item.Track.ExternalUrls.Spotify)
-		music.MusicUrl = append(music.MusicUrl, uri)
+		music.MusicPreview = append(music.MusicPreview, item.Track.Preview)
 		title := item.Track.Name
 		music.Titles = append(music.Titles, title)
 		artist := item.Track.Artists[0].Name
@@ -150,6 +153,6 @@ func ParsePlaylist(body []byte) {
 		parts := strings.Split(lyrics.Body, "\n...\n\n******* This Lyrics is NOT for Commercial use *******")
 		lyrics.Body = parts[0]
 		music.MusicLyrics = append(music.MusicLyrics, lyrics.Body)
-		println("Title: " + title + " Artist: " + artist)
 	}
+	return music
 }

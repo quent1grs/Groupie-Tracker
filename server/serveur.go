@@ -12,7 +12,6 @@ import (
 
 	"groupietracker/server/games"
 	user "groupietracker/server/user"
-	spotifyapi "groupietracker/spotifyApi"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -22,15 +21,7 @@ var PORT = "8080"
 var HOST = ""
 var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 
-type PageData struct {
-	URL string
-}
-
 func main() {
-	body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X")
-
-	spotifyapi.ParsePlaylist(body)
-
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
 	fs := http.FileServer(http.Dir("./assets"))
@@ -42,6 +33,7 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
+	http.HandleFunc("/blindtestws", games.BlindtestWs)
 	http.HandleFunc("/deaftest", games.HandleDeaftest)
 	http.HandleFunc("/scattegories", games.HandleScattegories)
 	http.HandleFunc("/register", user.HandleRegister)

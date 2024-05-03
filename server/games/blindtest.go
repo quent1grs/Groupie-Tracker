@@ -1,45 +1,136 @@
 package games
 
 import (
+	"encoding/json"
 	spotifyapi "groupietracker/spotifyApi"
+	"log"
 	mrand "math/rand"
 	"net/http"
+
+	"github.com/gorilla/websocket"
 )
 
 type PageData struct {
-	Artist string
-	Title  string
-	URL    string
-	Lyrics string
+	Artist  string
+	Title   string
+	Preview string
+	Lyrics  string
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+var clients []*websocket.Conn
+var currentMusic PageData
+
 func HandleBlindtest(w http.ResponseWriter, r *http.Request) {
-	var music spotifyapi.Music
+	http.ServeFile(w, r, "pages/blindtest.html")
+}
 
-	var artists = music.Artists
-	var titles = music.Titles
-	var musicUrl = music.MusicUrl
-
-	i := mrand.Intn(len(musicUrl))
-
-	data := PageData{
-		Artist: artists[i],
-		Title:  titles[i],
-		URL:    musicUrl[i],
+func BlindtestWs(w http.ResponseWriter, r *http.Request) {
+	if currentMusic.Artist == "" {
+		body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X")
+		music := spotifyapi.ParsePlaylist(body)
+		i := mrand.Intn(len(music.Artists))
+		currentMusic = PageData{
+			Artist:  music.Artists[i],
+			Title:   music.Titles[i],
+			Preview: music.MusicPreview[i],
+			Lyrics:  music.MusicLyrics[i],
+		}
 	}
 
-	if r.Method == http.MethodPost {
-		answer := r.FormValue("blindtest_answer")
-		if answer == data.Title || answer == data.Artist || answer == data.Title+" "+data.Artist || answer == data.Artist+" "+data.Title {
-			musicUrl = append(musicUrl[:i], musicUrl[i+1:]...)
-			titles = append(titles[:i], titles[i+1:]...)
-			artists = append(artists[:i], artists[i+1:]...)
-			i = mrand.Intn(len(musicUrl))
-			data.URL = musicUrl[i]
-			data.Title = titles[i]
-			data.Artist = artists[i]
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Close()
+
+	clients = append(clients, conn)
+
+	jsonData, err := json.Marshal(currentMusic)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for _, client := range clients {
+		err = client.WriteMessage(websocket.TextMessage, jsonData)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+	}
+
+	_, message, err := conn.ReadMessage()
+	if err != nil {
+		log.Println("Error reading message:", err)
+		return
+	}
+
+	if string(message) == "start_music" {
+		// Envoyer un message à tous les clients pour leur dire de démarrer la musique
+		for _, client := range clients {
+			err = client.WriteMessage(websocket.TextMessage, []byte("start_music"))
+			if err != nil {
+				log.Println("Error writing message:", err)
+				continue
+			}
+		}
+	}
+
+	err = conn.WriteMessage(websocket.TextMessage, jsonData)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Error reading message:", err)
+
+			// Supprimez le client de la liste des clients
+			for i, client := range clients {
+				if client == conn {
+					clients = append(clients[:i], clients[i+1:]...)
+					break
+				}
+			}
+
+			break
 		}
 
+		log.Println("Received message:", string(message))
+
+		userResponse := string(message)
+		var response map[string]string
+		if userResponse == currentMusic.Artist || userResponse == currentMusic.Title || userResponse == currentMusic.Artist+currentMusic.Title || userResponse == currentMusic.Title+currentMusic.Artist {
+			response = map[string]string{
+				"message": "Correct!",
+			}
+		} else {
+			response = map[string]string{
+				"message": "Incorrect!",
+			}
+		}
+
+		jsonData, err := json.Marshal(response)
+		if err != nil {
+			log.Println("Error marshalling response:", err)
+			return
+		}
+
+		err = conn.WriteMessage(websocket.TextMessage, jsonData)
+		if err != nil {
+			log.Println("Error writing message:", err)
+			break
+		}
 	}
-	http.ServeFile(w, r, "pages/blindtest.html")
 }

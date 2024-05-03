@@ -7,25 +7,54 @@
         <link rel="stylesheet" href="assets/css/blindtest.css">
     </head>
     <body>
-        <div class="hide"></div>
-        <div class="hide2"></div>
-        <div class="hide3"></div>
-        <div class="hide4"></div>
-        <iframe 
-            style="border-radius:12px"
-            src="https://open.spotify.com/embed/track/{{.URL}}"
-            width="50%" 
-            height="352" 
-            frameBorder="0"
-            allowfullscreen=""
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-            loading="lazy"
-        ></iframe>
         <div class="game">
-            <form action="/Nextsong" method="POST">
+            <audio controls autoplay id="audio">
+                <source src="" type="audio/mpeg">
+            </audio>
+            <form method="POST" class="post">
                 <input type="text" name="blindtest_answer" placeholder="Enter the song name">
                 <button type="submit">Submit</button>
             </form>
         </div>
     </body>
+    <script>
+        window.onload = function() {
+            var conn = new WebSocket('ws://localhost:8080/blindtestws');
+            console.log(conn);
+    
+            conn.onopen = function(e) {
+                console.log("Connection established!");
+            };
+
+            conn.onclose = function(e) {
+                console.log("Connection closed!");
+            };
+    
+            conn.onmessage = function(e) {
+                var data = JSON.parse(event.data);
+                console.log(data);
+                var audio = document.getElementById('audio');
+                audio.src = data.Preview;
+                audio.load();
+
+                if (data.message == "start_music") {
+                    audio.play();
+                }
+            };
+    
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (conn.readyState === WebSocket.OPEN) {
+                    var answer = document.querySelector('input[name="blindtest_answer"]').value;
+                    if (typeof answer === 'string') {
+                        conn.send(answer);
+                    } else {
+                        console.error('Answer is not a string:', answer);
+                    }
+                } else {
+                    console.error('WebSocket is not open:', conn.readyState);
+                }
+            });
+        };
+    </script>
 </html>
