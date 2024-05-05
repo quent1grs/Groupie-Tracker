@@ -166,12 +166,12 @@ img {
   transition: opacity 3s ease;
 }
 
-#crea {
+.crea {
   bottom: 80px;
   margin: auto;
 }
 
-#join{
+.join{
   bottom: 30px;
   margin: auto;
 }
@@ -191,6 +191,114 @@ img {
   fill: red;
   filter: url(#neon-effect);
 }
+
+#settingsPanel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  height: 80%;
+  border:hsl(0, 0%, 0%) solid 2px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 2em;
+  display: flex;
+  flex-direction: column;
+  font-family: 'American Typewriter', sans-serif;
+  justify-content: center;
+  align-items: center;
+  /* Reveal with fade in effect */
+  transition: opacity 1s ease;
+  z-index: 0;
+}
+
+/* Bouton arrondi en "pilule" */
+#joinGame {
+  background-color: #f2b120;
+  color: white;
+  height: 2em;
+  border: none;
+  border-radius: 2em;
+  padding: 0.5em 1em;
+  margin: 0.5em;
+  cursor: pointer;
+  font-size: small;
+  font-family: 'Press Start 2P', cursive;
+  /* flex: 1; */
+  margin-right: auto;
+}
+
+#ghostDiv {
+ flex: 1;
+}
+
+#gameCodeInput {
+  top: 0;
+  width: 50%;
+  height: 2em;
+  border-radius: 2em;
+  border: 2px solid black;
+  margin: 0.5em;
+  padding: 0.5em;
+  font-family: 'Press Start 2P', cursive;
+  flex: 1;
+}
+
+#gameCodeInput:hover {
+  border: 2px solid #c69c6d;
+}
+
+/* élément gameCode : contenant de gameCodeInput, du bouton joingame et de la div ghostDiv placée pour créer un espace vide à droite, laissant gameCodeInput au milieu et joingame à gauche */
+#gameCode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+
+#joinGame:hover {
+  background-color: #c69c6d;
+}
+
+/* $btn-close-width:            1em;
+$btn-close-height:           $btn-close-width;
+$btn-close-padding-x:        .25em;
+$btn-close-padding-y:        $btn-close-padding-x;
+$btn-close-color:            $black;
+$btn-close-bg:               url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$btn-close-color}'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
+$btn-close-focus-shadow:     $input-btn-focus-box-shadow;
+$btn-close-opacity:          .5;
+$btn-close-hover-opacity:    .75;
+$btn-close-focus-opacity:    1;
+$btn-close-disabled-opacity: .25;
+$btn-close-white-filter:     invert(1) grayscale(100%) brightness(200%); */
+
+.btn-close {
+  width: 1em;
+  height: 1em;
+  padding: .25em;
+  color: black;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: .5;
+  cursor: pointer;
+}
+
+#closeSettingsPanelBtn {
+  top: 1em;
+  right: 1em;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  height: 80%;
+}
+
 @keyframes neonEffect {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
     text-shadow:

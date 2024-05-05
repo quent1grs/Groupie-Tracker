@@ -235,6 +235,7 @@ h6 span:last-child{
     border-radius: 6px;
     left: 0;
     top: 50%;
+    /* transform: translateY(-50%); */
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-backface-visibility: hidden;
@@ -435,3 +436,15 @@ Grise le bouton, et le rend figé */
     color: #ffffff;
     box-shadow: none;
 } */
+
+/* #container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+} */
+
+#panel-container {
+    top: 50%;
+    transform: translateY(-40%);
+}

@@ -1,84 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="assets/css/choosegamepage.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="assets/css/choosegamepage.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Choose Game</title>
-</head>
-<body>
-  <video autoplay muted loop id="bg-video">
-    <source src="assets/img/vinyles.mp4" type="video/mp4">
-  </video>
-  <div class="container">
-    <input type="radio" name="slider" id="item-1" checked>
-    <input type="radio" name="slider" id="item-2">
-    <input type="radio" name="slider" id="item-3">
-  <div class="cards">
-    <label class="card" for="item-1" id="song-1">
-      <img src="assets/img/blindtest.png" alt="BlindTest">
-      <span class="card-text">BLINDTEST</span>
-      <button id="crea" class="hidden-btn" style="display:none;">Create</button>
-      <button id="join" class="hidden-btn" style="display:none;">Join</button>
-    </label>
-    <label class="card" for="item-2" id="song-2">
-      <img src="assets/img/Deaftest.png" alt="song">
-      <span class="card-text">DEAFTEST</span>
-      <button id="crea" class="hidden-btn" style="display:none;">Create</button>
-      <button id="join" class="hidden-btn" style="display:none;">Join</button>
-    </label>
-    <label class="card" for="item-3" id="song-3">
-      <img src="assets/img/Scattegories.png" alt="song">
-      <span class="card-text">SCATTEGORIES</span>
-      <button id="crea" class="hidden-btn" style="display:none;">Create</button>
-      <button id="join" class="hidden-btn" style="display:none;">Join</button>
-    </label>
-  </div>
-  <button id="playButton">
-    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="neon-effect" x="-50%" y="-50%" width="200%" height="200%">
-          <feFlood result="flood" flood-color="red" flood-opacity="0.5"></feFlood>
-          <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
-          <feGaussianBlur in="mask" result="blurred" stdDeviation="1"></feGaussianBlur> <!-- Valeur réduite pour moins de flou -->
-          <feMerge>
-            <feMergeNode in="blurred"></feMergeNode>
-            <feMergeNode in="SourceGraphic"></feMergeNode>
-          </feMerge>
-        </filter>
-      </defs>
-      <text x="20" y="150" font-family="'Press Start 2P'" font-size="90" font-weight="bold" letter-spacing="3" fill="red" filter="url(#neon-effect)" class="neon-letter">PLAY</text>
-    </svg>
-  </button>
-</div>
-</body>
-<script>
-$(document).ready(function() {
-  // Gestionnaire d'événements pour le bouton "PLAY"
-  $('#playButton').click(function() {
-    // D'abord, réinitialise toutes les cartes à leur état initial
-    $('.card-text').removeClass('text-up');
-    $('.hidden-btn').hide().removeClass('btn-show');
+  </head>
+  <body>
+    <video autoplay muted loop id="bg-video">
+      <source src="assets/img/vinyles.mp4" type="video/mp4" />
+    </video>
+    <div class="container">
+      <input type="radio" name="slider" id="item-1" checked />
+      <input type="radio" name="slider" id="item-2" />
+      <input type="radio" name="slider" id="item-3" />
+      <div class="cards">
+        <label class="card" for="item-1" id="song-1">
+          <img src="assets/img/blindtest.png" alt="BlindTest" />
+          <span class="card-text">BLINDTEST</span>
+          <button id="creaBtBtn" class="hidden-btn crea" style="display:none;">Create</button>
+          <script>
+            document.getElementById("creaBtBtn").onclick = function () {
+              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("createSettings").style.display = "block";
+              document.getElementById("joinSettings").style.display = "none";
+              document.getElementById("blindtestSettings").style.display = "block";
+              document.getElementById("deafTestSettings").style.display = "none";
+              document.getElementById("scattegoriesSettings").style.display = "none";
+            };
+          </script>
+          <button id="joinBtBtn" class="hidden-btn join" style="display:none;">Join</button>
+          <script>
+            document.getElementById("joinBtBtn").onclick = function () {
+              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("createSettings").style.display = "none";
+              document.getElementById("joinSettings").style.display = "block";
+              document.getElementById("blindtestSettings").style.display = "block";
+              document.getElementById("deafTestSettings").style.display = "none";
+              document.getElementById("scattegoriesSettings").style.display = "none";
+            };
+          </script>
+        </label>
+        <label class="card" for="item-2" id="song-2">
+          <img src="assets/img/Deaftest.png" alt="song" />
+          <span class="card-text">DEAFTEST</span>
+          <button id="creaDtBtn" class="hidden-btn crea" style="display:none;">Create</button>
+          <script>
+            document.getElementById("creaDtBtn").onclick = function () {
+              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("createSettings").style.display = "block";
+              document.getElementById("joinSettings").style.display = "none";
+              document.getElementById("blindtestSettings").style.display = "none";
+              document.getElementById("deafTestSettings").style.display = "block";
+              document.getElementById("scattegoriesSettings").style.display = "none";
+            };
+          </script>
+          <button id="joinDtBtn" class="hidden-btn join" style="display:none;">Join</button>
+          <script>
+            document.getElementById("joinDtBtn").onclick = function () {
+              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("createSettings").style.display = "none";
+              document.getElementById("joinSettings").style.display = "block";
+              document.getElementById("blindtestSettings").style.display = "none";
+              document.getElementById("deafTestSettings").style.display = "block";
+              document.getElementById("scattegoriesSettings").style.display = "none";
+            };
+          </script>
+        </label>
+        <label class="card" for="item-3" id="song-3">
+          <img src="assets/img/Scattegories.png" alt="song" />
+          <span class="card-text">SCATTEGORIES</span>
+          <button id="creaSgBtn" class="hidden-btn crea" style="display:none;">Create</button>
+          <script>
+            document.getElementById("creaSgBtn").onclick = function () {
+              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("createSettings").style.display = "block";
+              document.getElementById("joinSettings").style.display = "none";
+              document.getElementById("blindtestSettings").style.display = "none";
+              document.getElementById("deafTestSettings").style.display = "none";
+              document.getElementById("scattegoriesSettings").style.display = "block";
+            };
+          </script>
+          <button id="joinSgBtn" class="hidden-btn join" style="display:none;">Join</button>
+          <script>
+            document.getElementById("joinSgBtn").onclick = function () {
+              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("createSettings").style.display = "none";
+              document.getElementById("joinSettings").style.display = "block";
+              document.getElementById("blindtestSettings").style.display = "none";
+              document.getElementById("deafTestSettings").style.display = "none";
+              document.getElementById("scattegoriesSettings").style.display = "block";
+            };
+          </script>
+        </label>
+      </div>
+      <button id="playButton">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="neon-effect" x="-50%" y="-50%" width="200%" height="200%">
+              <feFlood result="flood" flood-color="red" flood-opacity="0.5"></feFlood>
+              <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
+              <feGaussianBlur in="mask" result="blurred" stdDeviation="1"></feGaussianBlur> <!-- Valeur réduite pour moins de flou -->
+              <feMerge>
+                <feMergeNode in="blurred"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+          </defs>
+          <text x="20" y="150" font-family="'Press Start 2P'" font-size="90" font-weight="bold" letter-spacing="3" fill="red" filter="url(#neon-effect)" class="neon-letter">PLAY</text>
+        </svg>
+      </button>
+    </div>
+    <div id="settingsPanel" style="display: none;">
+      <div id="settingsPanelClose">
+        <button id="closeSettingsPanelBtn" class="btn-close" aria-label="Close"></button>
+        <script>
+          document.getElementById("closeSettingsPanelBtn").onclick = function () {
+            document.getElementById("settingsPanel").style.display = "none";
+          };
+        </script>
+      </div>
+      <div id="createSettings" class="settings">
+        <h1>Create a game</h1>
+        
+        <label for="gameName">Game name:</label>
 
-    // Ensuite, trouve la carte actuellement sélectionnée et applique les animations
-    var selectedCardId = $('input[type=radio][name=slider]:checked').attr('id');
-    var cardSelector = 'label[for=' + selectedCardId + ']';
-    
-    var text = $(cardSelector + ' .card-text');
-    var buttons = $(cardSelector + ' .hidden-btn');
-    
-    text.addClass('text-up'); // Déplace le texte vers le haut
-    buttons.show().addClass('btn-show'); // Affiche et anime les boutons
-  });
+        <div id="blindtestSettings">
+          <h2>BlindTest settings</h2>
+        </div>
+        <div id="deafTestSettings">
+          <h2>DeafTest settings</h2>
+        </div>
+        <div id="scattegoriesSettings">
+          <h2>Scattegories settings</h2>
+        </div>
+      </div>
+      <div id="joinSettings" class="settings">
+        <h1>Join a game</h1>
+        <label for="gameCode">Game code:</label>
+        <div id="gameCode" style="display: -ms-inline-grid; flex-direction: row; justify-content:space-around;">
+          <button id="joinGame">Join</button><input type="text" id="gameCodeInput" name="gameCode" /><div style="display: block;" id="ghostDiv"></div>
+        </div>
+        <span id="gameCodeError">Game code not valid</span>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById(('gameCodeError')).addEventListener('click', function() {
+              var gameCode = document.getElementById('gameCode').value;
+              $.ajax({
+                url: '/joinGame',
+                type: 'POST',
+                data: JSON.stringify({gameCode: gameCode}),
+                success: function(response) {
+                  if (response == 'success') {
+                    // Rediriger vers la page de jeu
+                    // TODO implémenter la redirection selon un url incluant le code de jeu
+                  } else {
+                    document.getElementById('gameCodeError').style.display = 'block';
+                  }
+                }
+              });
+            });
+          });
+        </script>
+        
+        
+      </div>
+    </div>
+  </body>
+  <script>
+    $(document).ready(function() {
+      $('#playButton').click(function() {
+        $('.card-text').removeClass('text-up');
+        $('.hidden-btn').hide().removeClass('btn-show');
 
-  // Logique pour réinitialiser l'état des cartes lorsqu'une autre carte est sélectionnée
-  $('input[type=radio][name=slider]').change(function() {
-    // Réinitialise toutes les cartes à leur état initial
-    $('.card-text').removeClass('text-up');
-    $('.hidden-btn').hide().removeClass('btn-show');
-  });
-});
+        var selectedCardId = $('input[type=radio][name=slider]:checked').attr('id');
+        var cardSelector = 'label[for=' + selectedCardId + ']';
+        
+        var text = $(cardSelector + ' .card-text');
+        var buttons = $(cardSelector + ' .hidden-btn');
+        
+        text.addClass('text-up');
+        buttons.show().addClass('btn-show');
+      });
+
+      $('input[type=radio][name=slider]').change(function() {
+        $('.card-text').removeClass('text-up');
+        $('.hidden-btn').hide().removeClass('btn-show');
+      });
+    });
   </script>
 </html>
