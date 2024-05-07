@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="assets/css/blindtest.css">
     </head>
     <body>
+        <p id="countdown">0</p>
         <div class="game">
             <button id="play">Play</button>
             <audio controls autoplay id="audio" >
@@ -23,16 +24,15 @@
             var conn = new WebSocket('ws://localhost:8080/blindtestws');
             console.log(conn);
     
+            var firstload = true;
+            var firstMessage = true;
+
             conn.onopen = function(e) {
                 console.log("Connection established!");
             };
 
             document.getElementById('play').addEventListener('click', function() {
                 conn.send('start_music');
-            });
-
-            document.getElementById('submitbutton').addEventListener('click', function() {
-                conn.send('answer');
             });
 
             document.getElementById('audio').addEventListener('ended', function() {
@@ -45,7 +45,10 @@
 
     
             conn.onmessage = function(e) {
-                console.log("Raw data:", e.data);
+                if (firstMessage === true) {
+                    firstMessage = false;
+                    return;
+                }
 
                 var data;
                 try {
@@ -54,17 +57,44 @@
                     data = e.data;
                 }
 
-                console.log("Parsed data:", data);
-
                 var audio = document.getElementById('audio');
 
+                var audio = document.getElementById('audio');
+                var countdownElement = document.getElementById('countdown');
+
                 if (data === 'start_music') {
-                    console.log("Starting music");
-                    audio.play();
+                    var countdown = 3;
+                    countdownElement.innerText = countdown;
+
+                    var countdownInterval = setInterval(function() {
+                        countdown--;
+                        countdownElement.innerText = countdown;
+
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval);
+                            audio.play();
+                        }
+                    }, 1000);
                 } else if (data.Preview) {
-                    console.log("Received music URL:", data.Preview);
-                    audio.src = data.Preview;
-                    audio.load();
+                    if (firstload === true) {
+                        audio.src = data.Preview;
+                        audio.load();
+                        firstload = false;
+                    } else {
+                        var countdown = 3;
+                        countdownElement.innerText = countdown;
+                        
+                        var countdownInterval = setInterval(function() {
+                            countdown--;
+                            countdownElement.innerText = countdown;
+
+                            if (countdown <= 0) {
+                                clearInterval(countdownInterval);
+                                audio.src = data.Preview;
+                                audio.load();
+                            }
+                        }, 1000);
+                    }
                 }
             };
     
