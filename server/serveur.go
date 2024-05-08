@@ -8,7 +8,6 @@ import (
 	roomsdb "groupietracker/database/roomsDB"
 	"groupietracker/server/chat"
 	"groupietracker/server/lobby"
-	"groupietracker/server/room"
 	session "groupietracker/server/session"
 	"log"
 	"net/http"
@@ -17,7 +16,6 @@ import (
 	"groupietracker/server/games"
 	user "groupietracker/server/user"
 
-	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -43,8 +41,6 @@ func main() {
 		log.Printf("File server found.")
 	}
 
-	r := mux.NewRouter()
-
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
 	http.HandleFunc("/blindtestws", games.BlindtestWs)
@@ -62,11 +58,8 @@ func main() {
 	http.HandleFunc("/lobby", lobby.HandleLobby)
 	http.HandleFunc("/logout", session.HandleLogout)
 	http.HandleFunc("/getLetter", games.HandleGetLetter)
-	r.HandleFunc("/room/{roomID}", room.HandleRoom)
-	http.HandleFunc("/createRoom", room.HandleCreateRoom)
-	// http.HandleFunc("/joinRoom", room.HandleJoinRoom)
 
-	fmt.Println("Server online.")
+	fmt.Println(time.Now().String() + " Server is running on port " + PORT)
 
 	// Horloge pour les sessions
 	// go func() {
@@ -105,4 +98,13 @@ func main() {
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "pages/home-page.html")
+}
+
+func IsCookieActive(cookie session.Cookie) bool {
+	for _, c := range session.ActiveSessions {
+		if c.Cookie.CookieToken == cookie.CookieToken {
+			return true
+		}
+	}
+	return false
 }

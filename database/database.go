@@ -32,22 +32,6 @@ func Database() {
 	}
 }
 
-func ResetSessionData() {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("UPDATE USER SET status = 'offline'")
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = db.Exec("UPDATE USER SET sessioncookie = ''")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // InsertFormData insère les données du formulaire dans la base de données
 func InsertFormData(username, email, password string) error {
 	// Ouverture de la connexion à la base de données
@@ -234,4 +218,20 @@ func isIdentifierPresentInTheRow(identifier string, hashedPassword string, id in
 		log.Fatal(err)
 	}
 	return comparedUsername == identifier || comparedEmail == identifier
+}
+
+func ResetSessionData() {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	_, err = db.Exec("UPDATE USER SET status = 'offline'")
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = db.Exec("UPDATE USER SET sessioncookie = ''")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
