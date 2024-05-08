@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strings"
 	// "groupietracker/server"
 )
 
@@ -109,4 +110,12 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./home-page.html")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 
+}
+
+func GetUsername(w http.ResponseWriter, r *http.Request) string {
+	return strings.Split(strings.Split(r.Header.Get("Cookie"), "; ")[0], "=")[1]
+}
+
+func GetCookie(w http.ResponseWriter, r *http.Request) string {
+	return strings.Split(strings.Split(r.Header.Get("Cookie"), "; ")[1], "=")[1]
 }
