@@ -1,7 +1,10 @@
 package session
 
 import (
+	"database/sql"
 	"fmt"
+	"groupietracker/database"
+	"log"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -26,24 +29,32 @@ type Session struct {
 	InactiveSince int64
 }
 
-func IssueCookie(username string) Cookie {
-	return Cookie{CookieToken: generateCookieID(), Username: username}
+func IssueCookie() string {
+	return generateCookieID()
 }
 
-func IsCookieActive(cookie Cookie) bool {
-	// Check if the cookie is in the activeCookies map
-	// If it is, return true
-	// If it isn't, return false
-	fmt.Println("[DEBUG] Cookie to check: ", cookie)
-	for _, c := range ActiveSessions {
-		// fmt.Println("Current from-list Cookie ID: ", c.Cookie.CookieID)
-		// fmt.Println("Examined Cookie ID: ", cookie.CookieID)
-		if "cookie="+c.Cookie.CookieToken == cookie.CookieToken {
-			fmt.Println("[DEBUG] Cookie is active.")
+func IsCookieValid(cookie string) bool {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	rows, err := db.Query("SELECT sessioncookie FROM USER")
+	if err != nil {
+		fmt.Println("[DEBUG] Error while querying database.")
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var c string
+		err = rows.Scan(&c)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if c == cookie {
 			return true
 		}
 	}
-	fmt.Println("[DEBUG] Cookie is not active.")
 	return false
 }
 
@@ -52,7 +63,6 @@ func generateCookieID() string {
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
 	}
-	fmt.Println("Generated cookie ID: ", string(b))
 	return string(b)
 }
 
@@ -63,13 +73,14 @@ func IsClientLoggedIn(r *http.Request) bool {
 	cookie := r.Header.Get("Cookie")
 	fmt.Println("[DEBUG] Cookie: ", cookie)
 
-	yesNo := IsCookieActive(Cookie{CookieToken: cookie})
-	if yesNo == true {
+	yesNo := IsCookieValid(cookie)
+	if yesNo {
 		fmt.Println("[DEBUG] Client is logged in.")
+		return true
 	} else {
 		fmt.Println("[DEBUG] Client is not logged in.")
+		return false
 	}
-	return yesNo
 }
 
 func AddSession(username string, cookie Cookie) {
@@ -85,6 +96,21 @@ func AddSession(username string, cookie Cookie) {
 		fmt.Println("Key:", key, "Value:", value)
 	}
 
+}
+
+func UpdateCookieInDB(cookie string, username string) {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	_, err = db.Exec("UPDATE USER SET sessioncookie = ? WHERE username = ?", cookie, username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	database.ShowUserDetails(username)
+	fmt.Println("[DEBUG] New cookie: ", cookie)
+	fmt.Println("[DEBUG] Cookie updated in database.")
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) {

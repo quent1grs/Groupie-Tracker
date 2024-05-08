@@ -155,6 +155,8 @@
                     contentType: 'application/json',
                     data: JSON.stringify({username: username, email: email, password: password, password2: password2}),
                     success: function(response) {
+                        console.log(username, email, password, password2, response);
+
                         document.getElementById('usernameUsedError').textContent = '';
                         document.getElementById('emailUsedError').textContent = '';
                         document.getElementById('passwordConformityError').textContent = '';

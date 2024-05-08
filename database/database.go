@@ -34,27 +34,29 @@ func Database() {
 
 // InsertFormData insère les données du formulaire dans la base de données
 func InsertFormData(username, email, password string) error {
-	// Ouverture de la connexion à la base de données
 	db, err := sql.Open("sqlite3", "./database/db.sqlite")
 	if err != nil {
 		return fmt.Errorf("erreur lors de l'ouverture de la base de données: %v", err)
 	}
 
-	// Préparation de la requête d'insertion
-	stmt, err := db.Prepare("INSERT INTO USER(username, email, password) VALUES (?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO USER(id, username, email, password, status, sessioncookie) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
+		fmt.Println("[DEBUG] error 1 in database.InsertFormData() : ", err)
 		return fmt.Errorf("erreur lors de la préparation de la requête d'insertion: %v", err)
 	}
 	defer stmt.Close()
 
-	// Exécution de la requête d'insertion avec les valeurs du formulaire
-	_, err = stmt.Exec(email, username, password)
+	// Note : keep email and username in this order, even if it's in reverse order in the database
+	_, err = stmt.Exec(nextAvailableID(), email, username, password, "offline", "")
 	if err != nil {
+		fmt.Println("[DEBUG] error 2 in database.InsertFormData() : ", err)
 		return fmt.Errorf("erreur lors de l'insertion dans la base de données: %v", err)
 	}
 
 	fmt.Println("Données du formulaire insérées avec succès dans la base de données.")
 	db.Close()
+
+	fmt.Println("[DEBUG] database.InsertFormData() ended.")
 	return nil
 
 }
@@ -95,13 +97,20 @@ func GetUsers(db *sql.DB) {
 	}
 }
 
-func getNextID(db *sql.DB) (int, error) {
-	var maxID int
-	err := db.QueryRow("SELECT MAX(id) FROM USER").Scan(&maxID)
+func nextAvailableID() int {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
 	if err != nil {
-		return 0, err
+		return 0
 	}
-	return maxID + 1, nil
+	defer db.Close()
+
+	var maxID int
+	err = db.QueryRow("SELECT MAX(id) FROM USER").Scan(&maxID)
+	if err != nil {
+		return 0
+	}
+
+	return maxID + 1
 }
 
 func isUserTableEmpty(db *sql.DB) (bool, error) {

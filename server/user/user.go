@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type RequestNameRegisteringBody struct {
@@ -33,11 +34,9 @@ type User struct {
 
 // Ajout d'un utilisateur à la base de données
 func HandleRegister(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
-
 	}
 	err := r.ParseForm()
 	if err != nil {
@@ -47,9 +46,7 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("signname")
 	email := r.FormValue("signemail")
 	password := r.FormValue("signpass")
-
 	password = database.Hash(password)
-
 	if database.IsUsernameInDB(username) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -74,37 +71,37 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println("Login")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
-
 	}
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Erreur lors de la lecture des données du formulaire", http.StatusInternalServerError)
 		return
 	}
-
 	emailorUsername := r.FormValue("logemail/loguser")
 	password := r.FormValue("logpass")
-
-	// // Si les informations de connexion ne sont pas correctes, rediriger vers la page de connexion
 	if !database.IsPasswordCorrect(emailorUsername, password) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	// Si l'utilisateur a pu s'authentifier, créer un cookie et une session
-	cookie := session.IssueCookie(emailorUsername)
-	// Envoyer le cookie au client
-	http.SetCookie(w, &http.Cookie{
-		Name:  "cookie",
-		Value: cookie.CookieToken,
-	})
+	authCookie := http.Cookie{
+		Name:    "cookie",
+		Value:   session.IssueCookie(),
+		Expires: time.Now().Add(24 * time.Hour),
+	}
+	userCookie := http.Cookie{
+		Name:    "username",
+		Value:   emailorUsername,
+		Expires: time.Now().Add(24 * time.Hour),
+	}
+	session.UpdateCookieInDB(authCookie.Value, emailorUsername)
+	fmt.Println("User " + emailorUsername + " logged in.")
 
-	session.AddSession(emailorUsername, cookie)
-
+	http.SetCookie(w, &authCookie)
+	http.SetCookie(w, &userCookie)
 	http.Redirect(w, r, "/lobby", http.StatusSeeOther)
 }
 
@@ -200,10 +197,12 @@ func HandleRegisterControl(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur lors du décodage du JSON", http.StatusBadRequest)
 		return
 	}
+
 	username := requestNameRegisteringBody.Username
 	email := requestNameRegisteringBody.Email
 	password := requestNameRegisteringBody.Password
 	password2 := requestNameRegisteringBody.Password2
+
 	matched, _ := regexp.MatchString("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email)
 	switch {
 	case database.IsUsernameInDB(username):

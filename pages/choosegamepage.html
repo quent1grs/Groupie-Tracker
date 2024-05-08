@@ -125,50 +125,71 @@
       <div id="createSettings" class="settings">
         <h1>Create a game</h1>
         
-        <label for="gameName">Game name:</label>
-        <input type="text" id="gameName" name="gameName" />
+        <div id="commonSettings">
+          <div id="gamenameSettings" class="setting">
+            <label for="gameName" class="gameSettings">Game name:</label>
+            <input type="text" id="gameName" name="gameName" />
+          </div>
+          <div id="roundsSettings" class="setting">
+            <label for="rounds" class="gameSettings">Number of rounds:</label>
+            <input type="number" id="rounds" name="rounds" min="1" max="10" />
+          </div>
+          <div id="roundDurationSettings" class="setting">
+            <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
+            <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
+          </div>
+          <div id="maxPlayersSettings" class="setting">
+            <label for="maxPlayers" class="gameSettings">Max players:</label>
+            <input type="number" id="maxPlayers" name="maxPlayers" min="1" max="10" />
+          </div>
+        </div>
 
         <div id="blindtestSettings">
           <h2>BlindTest settings</h2>
-          <label for="rounds" class="gameSettings">Number of rounds:</label>
-          <input type="number" id="rounds" name="rounds" min="1" max="10" />
-          <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
-          <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
         </div>
         <div id="deafTestSettings">
           <h2>DeafTest settings</h2>
-          <label for="rounds" class="gameSettings">Number of rounds:</label>
-          <input type="number" id="rounds" name="rounds" min="1" max="10" />
-          <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
-          <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
         </div>
         <div id="scattegoriesSettings">
           <h2>Scattegories settings</h2>
-          <label for="rounds" class="gameSettings">Number of rounds:</label>
-          <input type="number" id="rounds" name="rounds" min="1" max="10" />
-          <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
-          <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
         </div>
         <button id="createGame">Create</button>
         <script>
           document.getElementById("createGame").onclick = function () {
             var gameName = document.getElementById("gameName").value;
-            var gameType = document.querySelector('input[name="slider"]:checked').id;
+            var gameType = document.getElementsByClassName("checked")[0].id;
+            var maxPlayers = document.getElementById("maxPlayers").value;
             var rounds = document.getElementById("rounds").value;
             var roundDuration = document.getElementById("roundDuration").value;
+            var categories = document.getElementById("listCategories").value;
+
+            if (gameType == "song-1") {
+              gameType = "blindtest";
+            } else if (gameType == "song-2") {
+              gameType = "deafTest";
+            } else if (gameType == "song-3") {
+              gameType = "scattegories";
+            }
+
             console.log("[DEBUG] gameName : " + gameName);
             console.log("[DEBUG] gameType : " + gameType);
+            console.log("[DEBUG] maxPlayers : " + maxPlayers);
             console.log("[DEBUG] rounds : " + rounds);
             console.log("[DEBUG] roundDuration : " + roundDuration);
+            console.log("[DEBUG] categories : " + categories);
             $.ajax({
               url: '/createRoom',
               type: 'POST',
-              data: JSON.stringify({gameName: gameName, gameType: gameType, rounds: rounds, roundDuration: roundDuration}),
+              data: JSON.stringify({gameName: gameName, gameType: gameType, maxPlayers: maxPlayers, rounds: rounds, roundDuration: roundDuration, categories: categories}),
               success: function(response) {
-                if (response == 'success') {
+                if (response.includes('success')) {
+                  // Récupérer le code de jeu qui suit le mot 'success='
+                  var gameCode = response.split('=')[1];
+                  console.log("[DEBUG] Redirection vers la page de jeu");
                   // Rediriger vers la page de jeu
                   // TODO implémenter la redirection selon un url incluant le code de jeu
-                  console.log("[DEBUG] Redirection vers la page de jeu");
+                  window.location.href = '/room/' + gameCode;
+
                 } else {
                   console.log("[DEBUG] Game creation failed");
                 }
@@ -190,7 +211,7 @@
               var gameCode = document.getElementById('gameCode').value;
               console.log("[DEBUG] gameCode : " + gameCode);
               $.ajax({
-                url: '/joinGame',
+                url: '/joinRoom',
                 type: 'POST',
                 data: JSON.stringify({gameCode: gameCode}),
                 success: function(response) {
@@ -198,6 +219,7 @@
                     // Rediriger vers la page de jeu
                     // TODO implémenter la redirection selon un url incluant le code de jeu
                     console.log("[DEBUG] Redirection vers la page de jeu");
+                    window.location.href = '/room/' + gameCode;
                   } else {
                     document.getElementById('gameCodeError').style.display = 'block';
                     console.log("[DEBUG] Game code not valid");
