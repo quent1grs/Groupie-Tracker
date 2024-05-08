@@ -52,7 +52,7 @@ func BlindtestWs(w http.ResponseWriter, r *http.Request) {
 	if currentMusic.Artist == "" {
 		body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X")
 		music = spotifyapi.ParsePlaylist(body)
-		currentMusic = ChooseMusic(music)
+		currentMusic = ChooseMusic(&music)
 	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -107,34 +107,16 @@ func BlindtestWs(w http.ResponseWriter, r *http.Request) {
 			UserTable.AddUser(r.Header.Get("Cookie"), user)
 		}
 
-		println(string(message))
 		if !user.CorrectAnswer {
 			if string(message) != "start_music" && string(message) != "end_music" {
 				userResponse := string(message)
-				var response map[string]string
-				if userResponse == currentMusic.Artist || userResponse == currentMusic.Title || userResponse == currentMusic.Artist+currentMusic.Title || userResponse == currentMusic.Title+currentMusic.Artist {
-					response = map[string]string{
-						"message": "Correct!",
-					}
-					user.Score += 1
+				status, response := CheckAnswer(userResponse, currentMusic)
+				if status {
 					user.CorrectAnswer = true
-				} else {
-					response = map[string]string{
-						"message": "Incorrect!",
-					}
+					user.Score += 1
 				}
 
-				jsonData, err := json.Marshal(response)
-				if err != nil {
-					log.Println("Error marshalling response:", err)
-					return
-				}
-
-				err = conn.WriteMessage(websocket.TextMessage, jsonData)
-				if err != nil {
-					log.Println("Error writing message:", err)
-					break
-				}
+				SendMessage(response, conn)
 			}
 		}
 
@@ -176,7 +158,7 @@ func (ut *UserTable) GetUser(cookie string) (*User, bool) {
 	return user, exists
 }
 
-func ChooseMusic(music spotifyapi.Music) PageData {
+func ChooseMusic(music *spotifyapi.Music) PageData {
 	i := mrand.Intn(len(music.Artists))
 	PageData := PageData{
 		Artist:  music.Artists[i],
@@ -199,7 +181,7 @@ func NextMusic(currentMusic *PageData, music *spotifyapi.Music) {
 		return
 	}
 
-	*currentMusic = ChooseMusic(*music)
+	*currentMusic = ChooseMusic(music)
 
 	jsonData, err := json.Marshal(currentMusic)
 	if err != nil {
@@ -213,5 +195,38 @@ func NextMusic(currentMusic *PageData, music *spotifyapi.Music) {
 			log.Println(err)
 			continue
 		}
+	}
+}
+
+func CheckAnswer(userResponse string, currentMusic PageData) (bool, map[string]string) {
+	var response map[string]string
+	if userResponse == currentMusic.Artist || userResponse == currentMusic.Title || userResponse == currentMusic.Artist+currentMusic.Title || userResponse == currentMusic.Title+currentMusic.Artist {
+		response = map[string]string{
+			"message": "Correct!",
+		}
+	} else {
+		response = map[string]string{
+			"message": "Incorrect!",
+		}
+	}
+
+	if response["message"] == "Correct!" {
+		return true, response
+	}
+
+	return false, response
+}
+
+func SendMessage(response map[string]string, conn *websocket.Conn) {
+	jsonData, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error marshalling response:", err)
+		return
+	}
+
+	err = conn.WriteMessage(websocket.TextMessage, jsonData)
+	if err != nil {
+		log.Println("Error writing message:", err)
+		return
 	}
 }

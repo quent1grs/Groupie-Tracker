@@ -37,6 +37,7 @@ func main() {
 	http.HandleFunc("/blindtest", games.HandleBlindtest)
 	http.HandleFunc("/blindtestws", games.BlindtestWs)
 	http.HandleFunc("/deaftest", games.HandleDeaftest)
+	http.HandleFunc("/deaftestws", games.DeaftestWs)
 	http.HandleFunc("/scattegories", games.HandleScattegories)
 	http.HandleFunc("/register", user.HandleRegister)
 	http.HandleFunc("/login", user.HandleLogin)

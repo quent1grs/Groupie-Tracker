@@ -50,15 +50,27 @@ var ws = new WebSocket('ws://localhost:8080/ws')
                 conn.send('start_music');
             });
 
-            document.getElementById('audio').addEventListener('ended', function() {
-                conn.send('end_music');
-            });
-
             conn.onclose = function(e) {
                 console.log("Connection closed!");
             };
 
     
+            function startMusicCountdown() {
+                var countdownElement = document.getElementById('countdown');
+                var musicCountdown = 30;
+                countdownElement.innerText = musicCountdown;
+
+                var musicCountdownInterval = setInterval(function() {
+                    musicCountdown--;
+                    countdownElement.innerText = musicCountdown;
+
+                    if (musicCountdown <= 0) {
+                        clearInterval(musicCountdownInterval);
+                        conn.send('end_music');
+                    }
+                }, 1000);
+            }
+
             conn.onmessage = function(e) {
                 if (firstMessage === true) {
                     firstMessage = false;
@@ -72,8 +84,7 @@ var ws = new WebSocket('ws://localhost:8080/ws')
                     data = e.data;
                 }
 
-                var audio = document.getElementById('audio');
-
+                console.log(data);
                 var audio = document.getElementById('audio');
                 var countdownElement = document.getElementById('countdown');
 
@@ -88,6 +99,7 @@ var ws = new WebSocket('ws://localhost:8080/ws')
                         if (countdown <= 0) {
                             clearInterval(countdownInterval);
                             audio.play();
+                            startMusicCountdown();
                         }
                     }, 1000);
                 } else if (data.Preview) {
@@ -107,6 +119,7 @@ var ws = new WebSocket('ws://localhost:8080/ws')
                                 clearInterval(countdownInterval);
                                 audio.src = data.Preview;
                                 audio.load();
+                                startMusicCountdown();
                             }
                         }, 1000);
                     }

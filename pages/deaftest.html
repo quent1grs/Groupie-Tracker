@@ -7,12 +7,81 @@
         <link rel="stylesheet" href="assets/css/deaftest.css">
     </head>
     <body>
-        
+        <p id="countdown">0</p>
+        <p id="Lyrics">0</p>
         <div class="game">
-            <form action="/Nextsong" method="POST">
+            <form method="POST" class="post">
                 <input type="text" name="deaftest_answer" placeholder="Enter the song name">
                 <button type="submit">Submit</button>
             </form>
         </div>
+        <p id="previous">Previous song: </p>
     </body>
+    <script>
+        window.onload = function() {
+            var conn = new WebSocket('ws://localhost:8080/deaftestws');
+            console.log(conn);
+
+            var intervalId;
+            var timer = 30;
+    
+            conn.onopen = function(e) {
+                console.log("Connection established!");
+            };
+    
+            conn.onclose = function(e) {
+                console.log("Connection closed!");
+            };
+    
+            conn.onmessage = function(e) {
+                var data;
+                try {
+                    data = JSON.parse(e.data);
+                } catch (error) {
+                    data = e.data;
+                }
+    
+                var lyrics = document.getElementById('Lyrics');
+                var countdown = document.getElementById('countdown');
+                var previous = document.getElementById('previous');
+
+                if (data.Lyrics) {
+                    var formattedLyrics = data.Lyrics.replace(/\n/g, '<br>');
+                    lyrics.innerHTML = formattedLyrics;
+                } else if (data.Title && data.Artist) {
+                    lyrics.innerText = "Title: " + data.Title + " by " + data.Artist;
+                }
+
+                timer = 30;
+                if (intervalId) {
+                    clearInterval(intervalId);
+                }
+
+                intervalId = setInterval(function() {
+                    timer--;
+                    countdown.innerText = timer;
+                    if (timer === 0) {
+                        clearInterval(intervalId);
+                        previous.innerText = "Previous song: " + data.Title + " by " + data.Artist;
+                        conn.send('Change_song');
+                    }
+                }, 1000);
+            };
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (conn.readyState === WebSocket.OPEN) {
+                    var answer = document.querySelector('input[name="deaftest_answer"]').value;
+                    if (typeof answer === 'string') {
+                        conn.send(answer);
+                    } else {
+                        console.error('Answer is not a string:', answer);
+                    }
+                } else {
+                    console.error('WebSocket is not open:', conn.readyState);
+                }
+            });
+
+        };
+    </script>
 </html>
