@@ -23,7 +23,9 @@ var HOST = ""
 var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 
 func main() {
-	chat.Chat()
+	chat.ChatScattegories()
+	chat.ChatBlindtest()
+	chat.ChatDeafTest()
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
 	fs := http.FileServer(http.Dir("./assets"))

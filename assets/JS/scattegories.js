@@ -1,4 +1,4 @@
- var ws = new WebSocket('ws://localhost:8080/ws');
+ var ws = new WebSocket('ws://localhost:8080/chatscattegoriesws');
 
         ws.onopen = () => {
         console.log("Connected");

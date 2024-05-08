@@ -7,10 +7,10 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-func Chat() {
+func ChatDeafTest() {
 	hub := []*websocket.Conn{}
 
-	http.Handle("/ws", websocket.Handler(func(ws *websocket.Conn) {
+	http.Handle("/chatdeaftestws", websocket.Handler(func(ws *websocket.Conn) {
 		data := map[string]interface{}{}
 		hub = append(hub, ws)
 		for {
