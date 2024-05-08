@@ -23,10 +23,10 @@
           <button id="creaBtBtn" class="hidden-btn crea" style="display:none;">Create</button>
           <script>
             document.getElementById("creaBtBtn").onclick = function () {
-              document.getElementById("settingsPanel").style.display = "block";
-              document.getElementById("createSettings").style.display = "block";
+              document.getElementById("settingsPanel").style.display = "flex";
+              document.getElementById("createSettings").style.display = "flex";
               document.getElementById("joinSettings").style.display = "none";
-              document.getElementById("blindtestSettings").style.display = "block";
+              document.getElementById("blindtestSettings").style.display = "flex";
               document.getElementById("deafTestSettings").style.display = "none";
               document.getElementById("scattegoriesSettings").style.display = "none";
             };
@@ -34,10 +34,10 @@
           <button id="joinBtBtn" class="hidden-btn join" style="display:none;">Join</button>
           <script>
             document.getElementById("joinBtBtn").onclick = function () {
-              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("settingsPanel").style.display = "flex";
               document.getElementById("createSettings").style.display = "none";
-              document.getElementById("joinSettings").style.display = "block";
-              document.getElementById("blindtestSettings").style.display = "block";
+              document.getElementById("joinSettings").style.display = "flex";
+              document.getElementById("blindtestSettings").style.display = "flex";
               document.getElementById("deafTestSettings").style.display = "none";
               document.getElementById("scattegoriesSettings").style.display = "none";
             };
@@ -49,22 +49,22 @@
           <button id="creaDtBtn" class="hidden-btn crea" style="display:none;">Create</button>
           <script>
             document.getElementById("creaDtBtn").onclick = function () {
-              document.getElementById("settingsPanel").style.display = "block";
-              document.getElementById("createSettings").style.display = "block";
+              document.getElementById("settingsPanel").style.display = "flex";
+              document.getElementById("createSettings").style.display = "flex";
               document.getElementById("joinSettings").style.display = "none";
               document.getElementById("blindtestSettings").style.display = "none";
-              document.getElementById("deafTestSettings").style.display = "block";
+              document.getElementById("deafTestSettings").style.display = "flex";
               document.getElementById("scattegoriesSettings").style.display = "none";
             };
           </script>
           <button id="joinDtBtn" class="hidden-btn join" style="display:none;">Join</button>
           <script>
             document.getElementById("joinDtBtn").onclick = function () {
-              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("settingsPanel").style.display = "flex";
               document.getElementById("createSettings").style.display = "none";
-              document.getElementById("joinSettings").style.display = "block";
+              document.getElementById("joinSettings").style.display = "flex";
               document.getElementById("blindtestSettings").style.display = "none";
-              document.getElementById("deafTestSettings").style.display = "block";
+              document.getElementById("deafTestSettings").style.display = "flex";
               document.getElementById("scattegoriesSettings").style.display = "none";
             };
           </script>
@@ -75,20 +75,20 @@
           <button id="creaSgBtn" class="hidden-btn crea" style="display:none;">Create</button>
           <script>
             document.getElementById("creaSgBtn").onclick = function () {
-              document.getElementById("settingsPanel").style.display = "block";
-              document.getElementById("createSettings").style.display = "block";
+              document.getElementById("settingsPanel").style.display = "flex";
+              document.getElementById("createSettings").style.display = "flex";
               document.getElementById("joinSettings").style.display = "none";
               document.getElementById("blindtestSettings").style.display = "none";
               document.getElementById("deafTestSettings").style.display = "none";
-              document.getElementById("scattegoriesSettings").style.display = "block";
+              document.getElementById("scattegoriesSettings").style.display = "flex";
             };
           </script>
           <button id="joinSgBtn" class="hidden-btn join" style="display:none;">Join</button>
           <script>
             document.getElementById("joinSgBtn").onclick = function () {
-              document.getElementById("settingsPanel").style.display = "block";
+              document.getElementById("settingsPanel").style.display = "flex";
               document.getElementById("createSettings").style.display = "none";
-              document.getElementById("joinSettings").style.display = "block";
+              document.getElementById("joinSettings").style.display = "flex";
               document.getElementById("blindtestSettings").style.display = "none";
               document.getElementById("deafTestSettings").style.display = "none";
               document.getElementById("scattegoriesSettings").style.display = "block";
@@ -126,16 +126,56 @@
         <h1>Create a game</h1>
         
         <label for="gameName">Game name:</label>
+        <input type="text" id="gameName" name="gameName" />
 
         <div id="blindtestSettings">
           <h2>BlindTest settings</h2>
+          <label for="rounds" class="gameSettings">Number of rounds:</label>
+          <input type="number" id="rounds" name="rounds" min="1" max="10" />
+          <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
+          <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
         </div>
         <div id="deafTestSettings">
           <h2>DeafTest settings</h2>
+          <label for="rounds" class="gameSettings">Number of rounds:</label>
+          <input type="number" id="rounds" name="rounds" min="1" max="10" />
+          <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
+          <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
         </div>
         <div id="scattegoriesSettings">
           <h2>Scattegories settings</h2>
+          <label for="rounds" class="gameSettings">Number of rounds:</label>
+          <input type="number" id="rounds" name="rounds" min="1" max="10" />
+          <label for="roundDuration" class="gameSettings">Round duration (in seconds):</label>
+          <input type="number" id="roundDuration" name="roundDuration" min="10" max="120" />
         </div>
+        <button id="createGame">Create</button>
+        <script>
+          document.getElementById("createGame").onclick = function () {
+            var gameName = document.getElementById("gameName").value;
+            var gameType = document.querySelector('input[name="slider"]:checked').id;
+            var rounds = document.getElementById("rounds").value;
+            var roundDuration = document.getElementById("roundDuration").value;
+            console.log("[DEBUG] gameName : " + gameName);
+            console.log("[DEBUG] gameType : " + gameType);
+            console.log("[DEBUG] rounds : " + rounds);
+            console.log("[DEBUG] roundDuration : " + roundDuration);
+            $.ajax({
+              url: '/createRoom',
+              type: 'POST',
+              data: JSON.stringify({gameName: gameName, gameType: gameType, rounds: rounds, roundDuration: roundDuration}),
+              success: function(response) {
+                if (response == 'success') {
+                  // Rediriger vers la page de jeu
+                  // TODO implémenter la redirection selon un url incluant le code de jeu
+                  console.log("[DEBUG] Redirection vers la page de jeu");
+                } else {
+                  console.log("[DEBUG] Game creation failed");
+                }
+              }
+            });
+          };
+        </script>
       </div>
       <div id="joinSettings" class="settings">
         <h1>Join a game</h1>
@@ -143,11 +183,12 @@
         <div id="gameCode" style="display: -ms-inline-grid; flex-direction: row; justify-content:space-around;">
           <button id="joinGame">Join</button><input type="text" id="gameCodeInput" name="gameCode" /><div style="display: block;" id="ghostDiv"></div>
         </div>
-        <span id="gameCodeError">Game code not valid</span>
+        <span id="gameCodeError" style="display:none;">Game code not valid</span>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById(('gameCodeError')).addEventListener('click', function() {
+            document.getElementById(('joinGame')).addEventListener('click', function() {
               var gameCode = document.getElementById('gameCode').value;
+              console.log("[DEBUG] gameCode : " + gameCode);
               $.ajax({
                 url: '/joinGame',
                 type: 'POST',
@@ -156,16 +197,20 @@
                   if (response == 'success') {
                     // Rediriger vers la page de jeu
                     // TODO implémenter la redirection selon un url incluant le code de jeu
+                    console.log("[DEBUG] Redirection vers la page de jeu");
                   } else {
                     document.getElementById('gameCodeError').style.display = 'block';
+                    console.log("[DEBUG] Game code not valid");
+                    setTimeout(function() {
+                      document.getElementById('gameCodeError').style.display = 'none';
+                    }, 3000);
+                    
                   }
                 }
               });
             });
           });
         </script>
-        
-        
       </div>
     </div>
   </body>

@@ -145,8 +145,8 @@ func UpdateUser(db *sql.DB, id int, username string, email string, password stri
 	}
 }
 
-func GetUser(db *sql.DB, id int) User {
-	var user User
+func GetUsername(db *sql.DB, id int) string {
+	var username string
 	stmt, err := db.Prepare("SELECT * FROM USER WHERE id = ?")
 
 	if err != nil {

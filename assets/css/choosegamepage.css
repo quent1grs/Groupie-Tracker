@@ -205,11 +205,20 @@ img {
   display: flex;
   flex-direction: column;
   font-family: 'American Typewriter', sans-serif;
-  justify-content: center;
-  align-items: center;
-  /* Reveal with fade in effect */
+  animation: fadeIn 1s ease;
   transition: opacity 1s ease;
   z-index: 0;
+}
+
+#settingsPanelClose {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 2.5em;
+  width: 100%;
+  border-radius: 2em 2em 0 0;
+  background-color: white;
+  border-bottom: 2px solid black;
 }
 
 /* Bouton arrondi en "pilule" */
@@ -224,12 +233,13 @@ img {
   cursor: pointer;
   font-size: small;
   font-family: 'Press Start 2P', cursive;
-  /* flex: 1; */
+  flex: 1;
   margin-right: auto;
 }
 
 #ghostDiv {
  flex: 1;
+ margin-left: auto;
 }
 
 #gameCodeInput {
@@ -241,7 +251,7 @@ img {
   margin: 0.5em;
   padding: 0.5em;
   font-family: 'Press Start 2P', cursive;
-  flex: 1;
+  flex: 1.5;
 }
 
 #gameCodeInput:hover {
@@ -280,14 +290,19 @@ $btn-close-white-filter:     invert(1) grayscale(100%) brightness(200%); */
   padding: .25em;
   color: black;
   background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
-  filter: invert(1) grayscale(100%) brightness(200%);
+  /* filter: invert(1) grayscale(100%) brightness(200%); */
   opacity: .5;
   cursor: pointer;
+}
+
+.btn-close:hover {
+  opacity: .75;
 }
 
 #closeSettingsPanelBtn {
   top: 1em;
   right: 1em;
+  position: fixed
 }
 
 .settings {
@@ -295,8 +310,14 @@ $btn-close-white-filter:     invert(1) grayscale(100%) brightness(200%); */
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 80%;
-  height: 80%;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+}
+
+.settings-titles {
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes neonEffect {
