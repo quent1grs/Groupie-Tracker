@@ -2,35 +2,41 @@ package lobby
 
 import (
 	"fmt"
+	"groupietracker/database"
 	session "groupietracker/server/session"
 	"net/http"
+	"strings"
 )
 
 func HandleLobby(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("[DEBUG] Objet w : ", w)
-	fmt.Println("[DEBUG] Objet r : ", r)
+
 	if r.URL.Path != "/lobby" {
-		fmt.Println("[DEBUG] 404 not found.")
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
 	}
 	if r.Method != http.MethodGet {
-		fmt.Println("[DEBUG] Invalid request method.")
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	if !session.IsCookieActive(session.Cookie{CookieToken: r.Header.Get("Cookie")}) || !session.IsClientLoggedIn(r) {
-		fmt.Println("[DEBUG] Cookie : ", r.Header.Get("Cookie"))
-		fmt.Println("[DEBUG] User not logged in. Redirecting to login page.")
+
+	// Récupérer la valeur du cookie dont le nom est "cookie"
+	var cookieContent string
+	if r.Header.Get("cookie") == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
-	} else {
-		fmt.Println("[DEBUG] User logged in. Proceeding to lobby.")
+	}
+	cookieContent = r.Header.Get("cookie")
+
+	// username := strings.Split(strings.Split(cookieContent, "; ")[0], "=")[1]
+	cookie := strings.Split(strings.Split(cookieContent, "; ")[1], "=")[1]
+
+	if !session.IsCookieValid(cookie) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 	}
 
-	fmt.Println("Cookie : ", r.Header.Get("Cookie"))
-	fmt.Println("User : ", session.ActiveSessions[r.Header.Get("Cookie")].Username)
-	fmt.Println("Active sessions : ", session.ActiveSessions)
+	fmt.Println("Active sessions : ")
+	database.EnumerateConnectedUsers()
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
