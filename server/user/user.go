@@ -145,20 +145,20 @@ func UpdateUser(db *sql.DB, id int, username string, email string, password stri
 	}
 }
 
-func GetUsername(db *sql.DB, id int) string {
-	var username string
-	stmt, err := db.Prepare("SELECT * FROM USER WHERE id = ?")
+// func GetUsername(db *sql.DB, id int) string {
+// 	var username string
+// 	stmt, err := db.Prepare("SELECT * FROM USER WHERE id = ?")
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = stmt.QueryRow(id).Scan(&user.Username, &user.Email, &user.Password)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	err = stmt.QueryRow(id).Scan(&user.Username, &user.Email, &user.Password)
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	return user
-}
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return user
+// }
 
 func RemoveUser(db *sql.DB, id int) {
 	stmt, err := db.Prepare("DELETE FROM USER WHERE id = ?")

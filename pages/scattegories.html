@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scattegories</title>
+    <link rel="stylesheet" href="assets/css/scattegories.css">
+</head>
+<body>
+    <div id="chat" style="border: black solid 2px;"></div>
+    <div id="chat-controls" style="clear: both;">
+        <button id="sendtextchat">Send</button>    
+        <input type="text" id="textchat">
+    </div>
+    <div id="leaderboard" style="border: black solid 2px;"></div>
+    <script src="assets/JS/scattegories.js"></script>    
+    <button id="STOPBTN" class="btn">STOP !</button>
+    <div class="category-table">
+        <div class="category-row">
+            <div class="category-cell">Groupe de musique</div>
+            <div class="category-cell">Album</div>
+            <div class="category-cell">Instrument de musique</div>
+            <div class="category-cell">Featuring</div>
+        </div>
+        <div class="category-row">
+            <div class="category-cell"><input type="text" id="musicGroup"></div>
+            <div class="category-cell"><input type="text" id="Album"></div>
+            <div class="category-cell"><input type="text" id="Instrument"></div>
+            <div class="category-cell"><input type="text" id="Featuring"></div>
+            <div class="category-cell"><span id="letter"></span></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -7,6 +7,11 @@
         <link rel="stylesheet" href="assets/css/blindtest.css">
     </head>
     <body>
+        <div id="chat" style="border: black solid 2px;"></div>
+        <div id="chat-controls" style="clear: both;">
+            <button id="sendtextchat">Send</button>    
+        <input type="text" id="textchat">
+        </div>
         <p id="countdown">0</p>
         <div class="game">
             <button id="play">Play</button>
@@ -19,98 +24,5 @@
             </form>
         </div>
     </body>
-    <script>
-        window.onload = function() {
-            var conn = new WebSocket('ws://localhost:8080/blindtestws');
-            console.log(conn);
-    
-            var firstload = true;
-            var firstMessage = true;
-
-            conn.onopen = function(e) {
-                console.log("Connection established!");
-            };
-
-            document.getElementById('play').addEventListener('click', function() {
-                conn.send('start_music');
-            });
-
-            document.getElementById('audio').addEventListener('ended', function() {
-                conn.send('end_music');
-            });
-
-            conn.onclose = function(e) {
-                console.log("Connection closed!");
-            };
-
-    
-            conn.onmessage = function(e) {
-                if (firstMessage === true) {
-                    firstMessage = false;
-                    return;
-                }
-
-                var data;
-                try {
-                    data = JSON.parse(e.data);
-                } catch (error) {
-                    data = e.data;
-                }
-
-                var audio = document.getElementById('audio');
-
-                var audio = document.getElementById('audio');
-                var countdownElement = document.getElementById('countdown');
-
-                if (data === 'start_music') {
-                    var countdown = 3;
-                    countdownElement.innerText = countdown;
-
-                    var countdownInterval = setInterval(function() {
-                        countdown--;
-                        countdownElement.innerText = countdown;
-
-                        if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            audio.play();
-                        }
-                    }, 1000);
-                } else if (data.Preview) {
-                    if (firstload === true) {
-                        audio.src = data.Preview;
-                        audio.load();
-                        firstload = false;
-                    } else {
-                        var countdown = 3;
-                        countdownElement.innerText = countdown;
-                        
-                        var countdownInterval = setInterval(function() {
-                            countdown--;
-                            countdownElement.innerText = countdown;
-
-                            if (countdown <= 0) {
-                                clearInterval(countdownInterval);
-                                audio.src = data.Preview;
-                                audio.load();
-                            }
-                        }, 1000);
-                    }
-                }
-            };
-    
-            document.querySelector('form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (conn.readyState === WebSocket.OPEN) {
-                    var answer = document.querySelector('input[name="blindtest_answer"]').value;
-                    if (typeof answer === 'string') {
-                        conn.send(answer);
-                    } else {
-                        console.error('Answer is not a string:', answer);
-                    }
-                } else {
-                    console.error('WebSocket is not open:', conn.readyState);
-                }
-            });
-        };
-    </script>
+    <script src="assets/JS/blindtest.js"></script>
 </html>

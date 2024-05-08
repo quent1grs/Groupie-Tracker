@@ -1,0 +1,70 @@
+#chat {
+    float: left;
+    width: 300px;
+    height: 900px; 
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+#chat-controls {
+    float: left;
+    width: 400px;
+}
+
+#leaderboard {
+    right: 10px;
+    position: absolute;
+    float: right;
+    width: 300px;
+    height: 300px; 
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.category-table {
+    position: absolute;
+    display: table;
+    float: right;
+    width: 30%;
+    top: 50px;
+    left: 400px;
+}
+
+.category-row {
+
+    display: table-row;
+}
+
+.category-cell {
+    display: table-cell;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+#STOPBTN {
+    position: fixed;
+    bottom: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+#STOPBTN:hover {
+    background-color: #d82222;
+}

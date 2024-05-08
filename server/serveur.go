@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"groupietracker/database"
+	"groupietracker/server/chat"
 	"groupietracker/server/lobby"
 	session "groupietracker/server/session"
 	"log"
@@ -22,6 +23,7 @@ var HOST = ""
 var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 
 func main() {
+	chat.Chat()
 	fmt.Println("Launching server.")
 	fmt.Println("Current server address: " + *addr)
 	fs := http.FileServer(http.Dir("./assets"))
@@ -46,6 +48,7 @@ func main() {
 	http.HandleFunc("/isPasswordValid", user.HandleIsPasswordValid)
 	http.HandleFunc("/lobby", lobby.HandleLobby)
 	http.HandleFunc("/logout", session.HandleLogout)
+	http.HandleFunc("/getLetter", games.HandleGetLetter)
 
 	fmt.Println(time.Now().String() + " Server is running on port " + PORT)
 
