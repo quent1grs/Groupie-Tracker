@@ -17,9 +17,19 @@ import (
 	"groupietracker/server/games"
 	user "groupietracker/server/user"
 
+<<<<<<< Updated upstream
 	"github.com/gorilla/mux"
+=======
+	"github.com/gorilla/websocket"
+>>>>>>> Stashed changes
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true }, // Ajoutez ceci si vous rencontrez des problèmes de CORS
+}
 
 // DEF CONFIGURABLES
 var PORT = "8080"
@@ -52,6 +62,7 @@ func main() {
 	http.HandleFunc("/deaftest", games.HandleDeaftest)
 	http.HandleFunc("/deaftestws", games.DeaftestWs)
 	http.HandleFunc("/scattegories", games.HandleScattegories)
+	http.HandleFunc("/ScattegoriesGame", games.HandleScattegoriesGameSocket)
 	http.HandleFunc("/register", user.HandleRegister)
 	http.HandleFunc("/login", user.HandleLogin)
 	http.HandleFunc("/loginControl", user.HandleLoginControl)

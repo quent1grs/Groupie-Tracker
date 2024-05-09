@@ -1,7 +1,8 @@
  var ws = new WebSocket('ws://localhost:8080/chatscattegoriesws');
+ var ScattegoriesGameSocket = new WebSocket('ws://localhost:8080/ScattegoriesGame');
 
         ws.onopen = () => {
-        console.log("Connected");
+        console.log("Chat Connected");
         var sendButton = document.getElementById("sendtextchat");
         var textInput = document.getElementById("textchat");
 
@@ -25,6 +26,7 @@
     function sendMessage() {
         var data = {
             "message": document.getElementById("textchat").value,
+            // "username": ,
         };
         ws.send(JSON.stringify(data));
         document.getElementById("textchat").value = ""; // Effacez le contenu de l'input
@@ -42,16 +44,7 @@
             delete ws;
         };
     
-        // function GetCookie(name) {
-        //     var nameEQ = name + "=";
-        //     var ca = document.cookie.split(';');
-        //     for (var i = 0; i < ca.length; i++) {
-        //         var c = ca[i];
-        //         while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        //         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        //     }
-        //     return null;
-        // }
+        
         
         $(document).ready(function() {
             $.ajax({
@@ -64,4 +57,21 @@
                     console.log(error);
                 }
             });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            var ScattegoriesGameSocket = new WebSocket('ws://localhost:8080/ScattegoriesGame');
+        
+            ScattegoriesGameSocket.onopen = function(event) {
+                console.log("ScattegoriesGameSocket is open");
+            };
+        
+            ScattegoriesGameSocket.onclose = function(event) {
+                console.log("ScattegoriesGameSocket is closed");
+            };
+        
+            ScattegoriesGameSocket.onerror = function(error) {
+                console.error("Error on ScattegoriesGameSocket: ", error);
+            };
+        
+            // Le reste de votre code...
         });
