@@ -6,6 +6,7 @@ import (
 	"groupietracker/database"
 	gamesdb "groupietracker/database/gamesDB"
 	roomsdb "groupietracker/database/roomsDB"
+	roomusersdb "groupietracker/database/roomusersDB"
 	"groupietracker/server/chat"
 	"groupietracker/server/lobby"
 	room "groupietracker/server/room"
@@ -31,6 +32,7 @@ func main() {
 	database.ResetSessionData()
 	gamesdb.ResetTable()
 	roomsdb.DeleteAllRooms()
+	roomusersdb.DeleteAllRoomUsers()
 	chat.ChatScattegories()
 	chat.ChatBlindtest()
 	chat.ChatDeafTest()

@@ -36,3 +36,15 @@ func ResetTable() {
 		log.Fatal(err)
 	}
 }
+
+func DeleteAllRoomUsers() {
+	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	_, err = db.Exec("DELETE FROM ROOM_USERS")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
