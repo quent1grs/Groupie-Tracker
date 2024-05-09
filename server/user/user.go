@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"groupietracker/database"
+	userdb "groupietracker/database/userDB"
 	session "groupietracker/server/session"
 	"log"
 	"math"
@@ -98,6 +99,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(24 * time.Hour),
 	}
 	session.UpdateCookieInDB(authCookie.Value, emailorUsername)
+	userdb.SetAsConnected(emailorUsername)
 	fmt.Println("User " + emailorUsername + " logged in.")
 
 	http.SetCookie(w, &authCookie)

@@ -142,6 +142,9 @@
             <label for="maxPlayers" class="gameSettings">Max players:</label>
             <input type="number" id="maxPlayers" name="maxPlayers" min="1" max="10" />
           </div>
+          <div id="categoriesSettings" class="setting">
+            <label for="listCategories" class="gameSettings">Categories:</label>
+            <input type="text" id="listCategories" name="listCategories" />
         </div>
 
         <div id="blindtestSettings">
@@ -157,11 +160,15 @@
         <script>
           document.getElementById("createGame").onclick = function () {
             var gameName = document.getElementById("gameName").value;
+            // console.log("[DEBUG] gameName : " + gameName);
             var gameType = document.getElementsByClassName("checked")[0].id;
+            // console.log("[DEBUG] gameType : " + gameType);
             var maxPlayers = document.getElementById("maxPlayers").value;
             var rounds = document.getElementById("rounds").value;
             var roundDuration = document.getElementById("roundDuration").value;
             var categories = document.getElementById("listCategories").value;
+
+            
 
             if (gameType == "song-1") {
               gameType = "blindtest";
@@ -247,6 +254,9 @@
         
         var text = $(cardSelector + ' .card-text');
         var buttons = $(cardSelector + ' .hidden-btn');
+
+        $('.card').removeClass('checked');
+        $(cardSelector).addClass('checked');
         
         text.addClass('text-up');
         buttons.show().addClass('btn-show');

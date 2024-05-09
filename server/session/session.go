@@ -8,12 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
-	// "groupietracker/server"
 )
-
-// var LoggedUsers = make(map[string]string)
-// var ActiveCookies = make(map[string]Cookie)
-var ActiveSessions = make(map[string]Session)
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const cookieSize = 20
@@ -67,35 +62,14 @@ func generateCookieID() string {
 }
 
 func IsClientLoggedIn(r *http.Request) bool {
-	// Check if the client is logged in
-	// If the client is logged in, return true
-	// If the client is not logged in, return false
 	cookie := r.Header.Get("Cookie")
-	fmt.Println("[DEBUG] Cookie: ", cookie)
 
 	yesNo := IsCookieValid(cookie)
 	if yesNo {
-		fmt.Println("[DEBUG] Client is logged in.")
 		return true
 	} else {
-		fmt.Println("[DEBUG] Client is not logged in.")
 		return false
 	}
-}
-
-func AddSession(username string, cookie Cookie) {
-	// Add the session to the ActiveSessions map
-	// The key should be the username
-	// The value should be the session
-	// The session should have the current time as the InactiveSince field
-	// Si la map ActiveSessions n'existe pas, la créer
-
-	ActiveSessions[username] = Session{Username: username, Cookie: cookie, InactiveSince: 0}
-	// énumération des sessions actives
-	for key, value := range ActiveSessions {
-		fmt.Println("Key:", key, "Value:", value)
-	}
-
 }
 
 func UpdateCookieInDB(cookie string, username string) {
@@ -109,34 +83,24 @@ func UpdateCookieInDB(cookie string, username string) {
 		log.Fatal(err)
 	}
 	database.ShowUserDetails(username)
-	fmt.Println("[DEBUG] New cookie: ", cookie)
-	fmt.Println("[DEBUG] Cookie updated in database.")
 }
 
-func HandleLogout(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("[DEBUG] Handling logout.")
-	cookie := r.Header.Get("Cookie")
-	fmt.Println("[DEBUG] Cookie: ", cookie)
+// func HandleLogout(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("[DEBUG] Handling logout.")
+// 	cookie := r.Header.Get("Cookie")
+// 	fmt.Println("[DEBUG] Cookie: ", cookie)
 
-	// Retire le cookie sur la session locale du client
+// 	// Retire le cookie sur la session locale du client
 
-	fmt.Println("[DEBUG] Active sessions: ", ActiveSessions)
-	for key, value := range ActiveSessions {
-		fmt.Println("[DEBUG] Key:", key, "Value:", value)
-		if "cookie="+value.Cookie.CookieToken == cookie {
-			delete(ActiveSessions, key)
-		}
-	}
-	fmt.Println("[DEBUG] Active sessions after removal of cookie : ", ActiveSessions)
-	r.Header.Del("Cookie")
-	r.Header.Add("Cookie", "cookie=deleted")
-	fmt.Println("[DEBUG] Cookie after logout: ", r.Header.Get("Cookie"))
-	http.SetCookie(w, &http.Cookie{Name: "cookie", Value: "deleted", MaxAge: -1})
+// 	r.Header.Del("Cookie")
+// 	r.Header.Add("Cookie", "cookie=deleted")
+// 	fmt.Println("[DEBUG] Cookie after logout: ", r.Header.Get("Cookie"))
+// 	http.SetCookie(w, &http.Cookie{Name: "cookie", Value: "deleted", MaxAge: -1})
 
-	http.ServeFile(w, r, "./home-page.html")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+// 	http.ServeFile(w, r, "./home-page.html")
+// 	http.Redirect(w, r, "/", http.StatusSeeOther)
 
-}
+// }
 
 func GetUsername(w http.ResponseWriter, r *http.Request) string {
 	return strings.Split(strings.Split(r.Header.Get("Cookie"), "; ")[0], "=")[1]

@@ -41,7 +41,6 @@ func InsertFormData(username, email, password string) error {
 
 	stmt, err := db.Prepare("INSERT INTO USER(id, username, email, password, status, sessioncookie) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		fmt.Println("[DEBUG] error 1 in database.InsertFormData() : ", err)
 		return fmt.Errorf("erreur lors de la préparation de la requête d'insertion: %v", err)
 	}
 	defer stmt.Close()
@@ -49,14 +48,12 @@ func InsertFormData(username, email, password string) error {
 	// Note : keep email and username in this order, even if it's in reverse order in the database
 	_, err = stmt.Exec(nextAvailableID(), email, username, password, "offline", "")
 	if err != nil {
-		fmt.Println("[DEBUG] error 2 in database.InsertFormData() : ", err)
 		return fmt.Errorf("erreur lors de l'insertion dans la base de données: %v", err)
 	}
 
 	fmt.Println("Données du formulaire insérées avec succès dans la base de données.")
 	db.Close()
 
-	fmt.Println("[DEBUG] database.InsertFormData() ended.")
 	return nil
 
 }
@@ -79,18 +76,14 @@ func GetUsers(db *sql.DB) {
 	for rows.Next() {
 		var id int
 		var username, email, password string
-
-		// Scan des colonnes dans les variables
 		err = rows.Scan(&id, &username, &email, &password)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// Affichage des données
 		fmt.Println(id, username, email, password)
 	}
 
-	// Vérification d'erreurs après avoir parcouru les lignes
 	err = rows.Err()
 	if err != nil {
 		log.Fatal(err)
@@ -178,7 +171,6 @@ func IsPasswordCorrect(identifier string, password string) bool {
 		log.Fatal(err)
 	}
 
-	// var comparedIdentifier string
 	var hashedPassword string
 	var idOfRow int
 	err = db.QueryRow("SELECT password FROM USER WHERE username = ? OR email = ?", identifier, identifier).Scan(&hashedPassword)
@@ -190,9 +182,6 @@ func IsPasswordCorrect(identifier string, password string) bool {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Identifier : ", identifier)
-	fmt.Println("Identifier in DB : ", idOfRow)
-
 	// Si identifier ne correspond pas à l'username ou à l'email, on renvoit false
 	if !isIdentifierPresentInTheRow(identifier, hashedPassword, idOfRow) {
 		return false
@@ -203,7 +192,6 @@ func IsPasswordCorrect(identifier string, password string) bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Compared password : ", comparedPassword)
 
 	return Hash(password) == comparedPassword
 }
@@ -217,12 +205,10 @@ func isIdentifierPresentInTheRow(identifier string, hashedPassword string, id in
 	var comparedUsername string
 	var comparedEmail string
 	err = db.QueryRow("SELECT username FROM USER WHERE id = ?", id).Scan(&comparedUsername)
-	fmt.Println("Compared identifier : ", comparedUsername)
 	if err != nil {
 		log.Fatal(err)
 	}
 	err = db.QueryRow("SELECT email FROM USER WHERE id = ?", id).Scan(&comparedEmail)
-	fmt.Println("Compared email : ", comparedEmail)
 	if err != nil {
 		log.Fatal(err)
 	}

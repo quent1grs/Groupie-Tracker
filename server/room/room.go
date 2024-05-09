@@ -43,10 +43,12 @@ func HandleRoom(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("[DEBUG] Handling create room.")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
+	fmt.Printf("[DEBUG] Creating room...\n")
 	user := session.GetUsername(w, r)
 	var request CreateRoomRequest
 
@@ -60,12 +62,16 @@ func HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	gameID := gamesdb.CreateGame(request.GameName)
+	fmt.Println("[DEBUG] Game created with ID: ", gameID)
 	roomID := roomsdb.GetNextAvailableID()
+	fmt.Println("[DEBUG] Room created with ID: ", roomID)
 	maxPlayers, _ := strconv.Atoi(request.MaxPlayers) // Convert string to int
+	fmt.Println("[DEBUG] Max players: ", maxPlayers)
 	roomsdb.InsertRoomInDatabase(roomID, user, maxPlayers, request.GameName, gameID)
+	fmt.Println("[DEBUG] Room inserted in database.")
 
 	roomusersdb.InsertUserInRoomUsers(roomID, userdb.GetIDFromUsername(user))
-
+	fmt.Println("[DEBUG] User inserted in room users.")
 	fmt.Fprint(w, "success="+string(rune(roomID)))
 	http.Redirect(w, r, "/room/"+string(rune(roomID)), http.StatusSeeOther)
 }
