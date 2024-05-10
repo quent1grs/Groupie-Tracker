@@ -7,7 +7,7 @@ import (
 	db "groupietracker/database/DB_Connection" // importez votre package DB_Connection
 )
 
-func InsertRoomInDatabase(idRoom int, roomOwner string, maxPlayers int, name string, idGame int) {
+func InsertRoomInDatabase(idRoom int, roomOwner int, maxPlayers int, name string, idGame int) {
 	fmt.Println("[DEBUG] insertRoomInDatabase() called.")
 	defer fmt.Println("[DEBUG] insertRoomInDatabase() ended.")
 
@@ -17,7 +17,7 @@ func InsertRoomInDatabase(idRoom int, roomOwner string, maxPlayers int, name str
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("[EVENT] Room" + string(idRoom) + " created in database.")
+	fmt.Println("[EVENT] Room" + string(rune(idRoom)) + " created in database.")
 }
 
 func DeleteAllRooms() {

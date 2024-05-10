@@ -28,12 +28,12 @@ func HandleLobby(w http.ResponseWriter, r *http.Request) {
 
 	if !session.IsCookieValid(cookie) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 	}
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
+
 	http.ServeFile(w, r, "./pages/choosegamepage.html")
 }

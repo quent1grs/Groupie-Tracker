@@ -62,7 +62,7 @@ func HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("[DEBUG] Room created with ID: ", roomID)
 	maxPlayers, _ := strconv.Atoi(request.MaxPlayers) // Convert string to int
 	fmt.Println("[DEBUG] Max players: ", maxPlayers)
-	roomsdb.InsertRoomInDatabase(roomID, user, maxPlayers, request.GameName, gameID)
+	roomsdb.InsertRoomInDatabase(roomID, userdb.GetIDFromUsername(user), maxPlayers, request.GameName, gameID)
 	fmt.Println("[DEBUG] Room inserted in database.")
 
 	roomusersdb.InsertUserInRoomUsers(roomID, userdb.GetIDFromUsername(user))

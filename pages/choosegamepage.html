@@ -145,6 +145,7 @@
           <div id="categoriesSettings" class="setting">
             <label for="listCategories" class="gameSettings">Categories:</label>
             <input type="text" id="listCategories" name="listCategories" />
+          </div>
         </div>
 
         <div id="blindtestSettings">
@@ -209,31 +210,45 @@
         <h1>Join a game</h1>
         <label for="gameCode">Game code:</label>
         <div id="gameCode" style="display: -ms-inline-grid; flex-direction: row; justify-content:space-around;">
-          <button id="joinGame">Join</button><input type="text" id="gameCodeInput" name="gameCode" /><div style="display: block;" id="ghostDiv"></div>
+          <button id="joinGameBtn">Join</button><input type="text" id="gameCodeInput" name="gameCode" /><div style="display: block;" id="ghostDiv"></div>
         </div>
         <span id="gameCodeError" style="display:none;">Game code not valid</span>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById(('joinGame')).addEventListener('click', function() {
-              var gameCode = document.getElementById('gameCode').value;
-              console.log("[DEBUG] gameCode : " + gameCode);
+            document.getElementById(('joinGameBtn')).addEventListener('click', function() {
+              var roomID = document.getElementById('gameCode').value;
               $.ajax({
                 url: '/joinRoom',
                 type: 'POST',
+                data: JSON.stringify({roomID: roomID}),
+                success: function(response) {
+                  if (response.includes('success')) {
+                    
+                  } else {
+                    console.log("[DEBUG] Game join failed");
+                  }
+                }
+              });
+            });
+          });
+
+          document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById(('gameCodeInput')).addEventListener('input', function(e) {
+              
+              var gameCode = document.getElementById('gameCodeInput').value;
+              $.ajax({
+                url: '/controlCode',
+                type: 'POST',
                 data: JSON.stringify({gameCode: gameCode}),
                 success: function(response) {
-                  if (response == 'success') {
-                    // Rediriger vers la page de jeu
-                    // TODO implémenter la redirection selon un url incluant le code de jeu
-                    console.log("[DEBUG] Redirection vers la page de jeu");
-                    window.location.href = '/room/' + gameCode;
+                  if (response == 'true') {
+                    document.getElementById('joinGameBtn').disabled = false;
+                    document.getElementById('gameCodeError').style.display = 'none';
+                    document.getElementById('joinGameBtn').style.backgroundColor = 'green';
                   } else {
                     document.getElementById('gameCodeError').style.display = 'block';
-                    console.log("[DEBUG] Game code not valid");
-                    setTimeout(function() {
-                      document.getElementById('gameCodeError').style.display = 'none';
-                    }, 3000);
-                    
+                    document.getElementById('joinGameBtn').disabled = true;
+                    document.getElementById('joinGameBtn').style.backgroundColor = 'grey';
                   }
                 }
               });

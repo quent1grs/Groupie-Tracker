@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	db "groupietracker/database/DB_Connection" // importez votre package DB_Connection
+	db "groupietracker/database/DB_Connection"
 )
 
 func CreateGame(name string) int {
@@ -15,7 +15,7 @@ func CreateGame(name string) int {
 
 	id := nextAvailableID()
 
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	_, err := conn.Exec("INSERT INTO GAMES (id, name) VALUES (?, ?)", id, name)
 	if err != nil {
@@ -29,7 +29,7 @@ func CreateGame(name string) int {
 func DeleteGameFromDB(gameID string) {
 	fmt.Println("[DEBUG] DeleteGameFromDB() called.")
 
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	_, err := conn.Exec("DELETE FROM GAMES WHERE id = ?", gameID)
 	if err != nil {
@@ -40,7 +40,7 @@ func DeleteGameFromDB(gameID string) {
 }
 
 func ResetTable() {
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	_, err := conn.Exec("DELETE FROM GAMES")
 	if err != nil {
@@ -49,7 +49,7 @@ func ResetTable() {
 }
 
 func EnumerateGames() {
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	rows, err := conn.Query("SELECT id, name FROM GAMES")
 	if err != nil {
@@ -69,7 +69,7 @@ func nextAvailableID() int {
 	fmt.Println("[DEBUG] nextAvailableID() called.")
 	defer fmt.Println("[DEBUG] nextAvailableID() ended.")
 
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	rows, err := conn.Query("SELECT id FROM GAMES")
 	if err != nil {

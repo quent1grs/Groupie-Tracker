@@ -104,6 +104,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &authCookie)
 	http.SetCookie(w, &userCookie)
+	fmt.Println("[DEBUG] user.HandleLogin: redirecting to /lobby")
 	http.Redirect(w, r, "/lobby", http.StatusSeeOther)
 }
 

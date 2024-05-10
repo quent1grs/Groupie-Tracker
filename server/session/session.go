@@ -29,8 +29,7 @@ func IssueCookie() string {
 }
 
 func IsCookieValid(cookie string) bool {
-	conn := db.GetDB() // Utilisation de la fonction de connexion du package DB_Connection
-	// defer conn.Close()
+	conn := db.GetDB()
 	rows, err := conn.Query("SELECT sessioncookie FROM USER")
 	if err != nil {
 		fmt.Println("[DEBUG] Error while querying database.")
@@ -70,31 +69,12 @@ func IsClientLoggedIn(r *http.Request) bool {
 }
 
 func UpdateCookieInDB(cookie string, username string) {
-	conn := db.GetDB() // Utilisation de la fonction de connexion du package DB_Connection
-	// defer conn.Close()
+	conn := db.GetDB()
 	_, err := conn.Exec("UPDATE USER SET sessioncookie = ? WHERE username = ?", cookie, username)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// database.ShowUserDetails(username)
 }
-
-// func HandleLogout(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("[DEBUG] Handling logout.")
-// 	cookie := r.Header.Get("Cookie")
-// 	fmt.Println("[DEBUG] Cookie: ", cookie)
-
-// 	// Retire le cookie sur la session locale du client
-
-// 	r.Header.Del("Cookie")
-// 	r.Header.Add("Cookie", "cookie=deleted")
-// 	fmt.Println("[DEBUG] Cookie after logout: ", r.Header.Get("Cookie"))
-// 	http.SetCookie(w, &http.Cookie{Name: "cookie", Value: "deleted", MaxAge: -1})
-
-// 	http.ServeFile(w, r, "./home-page.html")
-// 	http.Redirect(w, r, "/", http.StatusSeeOther)
-
-// }
 
 func GetUsername(w http.ResponseWriter, r *http.Request) string {
 	return strings.Split(strings.Split(r.Header.Get("Cookie"), "; ")[0], "=")[1]

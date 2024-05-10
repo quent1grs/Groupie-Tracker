@@ -98,17 +98,6 @@ func isUserTableEmpty(db *sql.DB) (bool, error) {
 	return count == 0, nil
 }
 
-func deleteAllUsers(db *sql.DB) {
-	stmt, err := db.Prepare("DELETE FROM USER")
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = stmt.Exec()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func IsUsernameInDB(username string) bool {
 	db := db.GetDB()
 
@@ -154,7 +143,7 @@ func IsPasswordCorrect(identifier string, password string) bool {
 		log.Fatal(err)
 	}
 
-	if !isIdentifierPresentInTheRow(identifier, hashedPassword, idOfRow) {
+	if !isIdentifierPresentInTheRow(identifier, idOfRow) {
 		return false
 	}
 
@@ -167,7 +156,7 @@ func IsPasswordCorrect(identifier string, password string) bool {
 	return Hash(password) == comparedPassword
 }
 
-func isIdentifierPresentInTheRow(identifier string, hashedPassword string, id int) bool {
+func isIdentifierPresentInTheRow(identifier string, id int) bool {
 	db := db.GetDB()
 
 	var comparedUsername string
