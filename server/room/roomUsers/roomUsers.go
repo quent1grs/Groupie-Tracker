@@ -1,20 +1,13 @@
 package roomUsers
 
-// Content of room_users de db.sqlite: id_room ; id_user ; score
-
 import (
-	"database/sql"
 	"fmt"
+	db "groupietracker/database/DB_Connection"
 	"log"
 )
 
 func InsertUserInRoom(idRoom string, idUser string) {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("INSERT INTO ROOMS_USERS (id_room, id_user) VALUES (?, ?)", idRoom, idUser)
+	_, err := db.Conn.Exec("INSERT INTO ROOMS_USERS (id_room, id_user) VALUES (?, ?)", idRoom, idUser)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,12 +15,7 @@ func InsertUserInRoom(idRoom string, idUser string) {
 }
 
 func DeleteUserFromRoom(idRoom string, idUser string) {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("DELETE FROM ROOMS_USERS WHERE id_room = ? AND id_user = ?", idRoom, idUser)
+	_, err := db.Conn.Exec("DELETE FROM ROOMS_USERS WHERE id_room = ? AND id_user = ?", idRoom, idUser)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,12 +23,7 @@ func DeleteUserFromRoom(idRoom string, idUser string) {
 }
 
 func AddScoreToUser(idRoom string, idUser string, score int) {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("UPDATE ROOMS_USERS SET score = score + ? WHERE id_room = ? AND id_user = ?", score, idRoom, idUser)
+	_, err := db.Conn.Exec("UPDATE ROOMS_USERS SET score = score + ? WHERE id_room = ? AND id_user = ?", score, idRoom, idUser)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,13 +31,8 @@ func AddScoreToUser(idRoom string, idUser string, score int) {
 }
 
 func GetScoreOfUser(idRoom string, idUser string) int {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
 	var score int
-	err = db.QueryRow("SELECT score FROM ROOMS_USERS WHERE id_room = ? AND id_user = ?", idRoom, idUser).Scan(&score)
+	err := db.Conn.QueryRow("SELECT score FROM ROOMS_USERS WHERE id_room = ? AND id_user = ?", idRoom, idUser).Scan(&score)
 	if err != nil {
 		log.Fatal(err)
 	}

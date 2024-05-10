@@ -1,21 +1,19 @@
 package roomsdb
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+
+	db "groupietracker/database/DB_Connection" // importez votre package DB_Connection
 )
 
 func InsertRoomInDatabase(idRoom int, roomOwner string, maxPlayers int, name string, idGame int) {
 	fmt.Println("[DEBUG] insertRoomInDatabase() called.")
 	defer fmt.Println("[DEBUG] insertRoomInDatabase() ended.")
 
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("INSERT INTO ROOMS (id, created_by, max_player, name, id_game) VALUES (?, ?, ?, ?, ?)", idRoom, roomOwner, maxPlayers, name, idGame)
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+
+	_, err := conn.Exec("INSERT INTO ROOMS (id, created_by, max_player, name, id_game) VALUES (?, ?, ?, ?, ?)", idRoom, roomOwner, maxPlayers, name, idGame)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,12 +21,9 @@ func InsertRoomInDatabase(idRoom int, roomOwner string, maxPlayers int, name str
 }
 
 func DeleteAllRooms() {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("DELETE FROM ROOMS")
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+
+	_, err := conn.Exec("DELETE FROM ROOMS")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,13 +33,9 @@ func GetNextAvailableID() int {
 	fmt.Println("[DEBUG] roomsdb.GetNextAvailableID() called.")
 	defer fmt.Println("[DEBUG] roomsdb.GetNextAvailableID() ended.")
 
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
 
-	rows, err := db.Query("SELECT id FROM ROOMS")
+	rows, err := conn.Query("SELECT id FROM ROOMS")
 	if err != nil {
 		log.Fatal(err)
 	}

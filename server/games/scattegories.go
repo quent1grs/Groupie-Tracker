@@ -23,7 +23,7 @@ func HandleScattegoriesGameSocket(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	defer conn.Close()
+	// defer conn.Close()
 
 	for {
 		_, message, err := conn.ReadMessage()

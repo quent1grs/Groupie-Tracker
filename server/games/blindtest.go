@@ -60,7 +60,6 @@ func BlindtestWs(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	defer conn.Close()
 
 	clients = append(clients, conn)
 

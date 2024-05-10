@@ -1,13 +1,13 @@
 package session
 
 import (
-	"database/sql"
 	"fmt"
-	"groupietracker/database"
 	"log"
 	"math/rand"
 	"net/http"
 	"strings"
+
+	db "groupietracker/database/DB_Connection" // Importation du package pour la connexion à la base de données
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -29,12 +29,9 @@ func IssueCookie() string {
 }
 
 func IsCookieValid(cookie string) bool {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	rows, err := db.Query("SELECT sessioncookie FROM USER")
+	conn := db.GetDB() // Utilisation de la fonction de connexion du package DB_Connection
+	// defer conn.Close()
+	rows, err := conn.Query("SELECT sessioncookie FROM USER")
 	if err != nil {
 		fmt.Println("[DEBUG] Error while querying database.")
 		log.Fatal(err)
@@ -73,16 +70,13 @@ func IsClientLoggedIn(r *http.Request) bool {
 }
 
 func UpdateCookieInDB(cookie string, username string) {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
+	conn := db.GetDB() // Utilisation de la fonction de connexion du package DB_Connection
+	// defer conn.Close()
+	_, err := conn.Exec("UPDATE USER SET sessioncookie = ? WHERE username = ?", cookie, username)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
-	_, err = db.Exec("UPDATE USER SET sessioncookie = ? WHERE username = ?", cookie, username)
-	if err != nil {
-		log.Fatal(err)
-	}
-	database.ShowUserDetails(username)
+	// database.ShowUserDetails(username)
 }
 
 // func HandleLogout(w http.ResponseWriter, r *http.Request) {

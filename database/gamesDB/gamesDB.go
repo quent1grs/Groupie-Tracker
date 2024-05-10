@@ -1,9 +1,10 @@
 package gamesdb
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+
+	db "groupietracker/database/DB_Connection" // importez votre package DB_Connection
 )
 
 func CreateGame(name string) int {
@@ -14,13 +15,9 @@ func CreateGame(name string) int {
 
 	id := nextAvailableID()
 
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
 
-	_, err = db.Exec("INSERT INTO GAMES (id, name) VALUES (?, ?)", id, name)
+	_, err := conn.Exec("INSERT INTO GAMES (id, name) VALUES (?, ?)", id, name)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,12 +29,9 @@ func CreateGame(name string) int {
 func DeleteGameFromDB(gameID string) {
 	fmt.Println("[DEBUG] DeleteGameFromDB() called.")
 
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("DELETE FROM GAMES WHERE id = ?", gameID)
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+
+	_, err := conn.Exec("DELETE FROM GAMES WHERE id = ?", gameID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,25 +40,18 @@ func DeleteGameFromDB(gameID string) {
 }
 
 func ResetTable() {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("DELETE FROM GAMES")
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+
+	_, err := conn.Exec("DELETE FROM GAMES")
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func EnumerateGames() {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
 
-	rows, err := db.Query("SELECT id, name FROM GAMES")
+	rows, err := conn.Query("SELECT id, name FROM GAMES")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -82,13 +69,9 @@ func nextAvailableID() int {
 	fmt.Println("[DEBUG] nextAvailableID() called.")
 	defer fmt.Println("[DEBUG] nextAvailableID() ended.")
 
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
 
-	rows, err := db.Query("SELECT id FROM GAMES")
+	rows, err := conn.Query("SELECT id FROM GAMES")
 	if err != nil {
 		log.Fatal(err)
 	}

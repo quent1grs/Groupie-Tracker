@@ -17,11 +17,8 @@ import (
 	"groupietracker/server/games"
 	user "groupietracker/server/user"
 
-<<<<<<< Updated upstream
 	"github.com/gorilla/mux"
-=======
 	"github.com/gorilla/websocket"
->>>>>>> Stashed changes
 	_ "github.com/mattn/go-sqlite3"
 )
 

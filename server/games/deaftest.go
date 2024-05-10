@@ -28,7 +28,7 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	defer conn.Close()
+	// defer conn.Close()
 
 	clients = append(clients, conn)
 

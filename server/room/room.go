@@ -1,16 +1,9 @@
 package room
 
-// Stores logic for rooms management. A room is a group session with a dedicated url, it's own chat and users list.
-// Rooms are stored in the database in ./database/db.sqlite in the table 'rooms'.
-
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"strconv"
-
-	// "groupietracker/server/room/roomUsers"
+	db "groupietracker/database/DB_Connection"
 	gamesdb "groupietracker/database/gamesDB"
 	roomsdb "groupietracker/database/roomsDB"
 	roomusersdb "groupietracker/database/roomusersDB"
@@ -18,6 +11,8 @@ import (
 	"groupietracker/server/room/roomUsers"
 	"groupietracker/server/session"
 	"log"
+	"net/http"
+	"strconv"
 )
 
 type CreateRoomRequest struct {
@@ -77,24 +72,16 @@ func HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
 }
 
 func CleaningRooms() {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("DELETE FROM ROOMS")
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	_, err := conn.Exec("DELETE FROM ROOMS")
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func DeleteRoomFromDB(roomID string) {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("DELETE FROM ROOMS WHERE id = ?", roomID)
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	_, err := conn.Exec("DELETE FROM ROOMS WHERE id = ?", roomID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -102,12 +89,8 @@ func DeleteRoomFromDB(roomID string) {
 }
 
 func doesRoomExist(roomID string) bool {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	rows, err := db.Query("SELECT id FROM ROOMS WHERE id = ?", roomID)
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	rows, err := conn.Query("SELECT id FROM ROOMS WHERE id = ?", roomID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -119,12 +102,8 @@ func doesRoomExist(roomID string) bool {
 }
 
 func isRoomFull(roomID string) bool {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	rows, err := db.Query("SELECT COUNT(*) FROM ROOMS_USERS WHERE roomID = ?", roomID)
+	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	rows, err := conn.Query("SELECT COUNT(*) FROM ROOM_USERS WHERE id_room = ?", roomID)
 	if err != nil {
 		log.Fatal(err)
 	}

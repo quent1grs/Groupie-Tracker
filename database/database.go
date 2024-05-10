@@ -5,16 +5,12 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	db "groupietracker/database/DB_Connection"
 	"log"
 )
 
 func Database() {
-	// user_id := 0
-	db, err := sql.Open("sqlite3", "database/database.go")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	db := db.GetDB()
 	GetUsers(db)
 	isEmpty, err := isUserTableEmpty(db)
 	if err != nil {
@@ -32,12 +28,8 @@ func Database() {
 	}
 }
 
-// InsertFormData insère les données du formulaire dans la base de données
 func InsertFormData(username, email, password string) error {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		return fmt.Errorf("erreur lors de l'ouverture de la base de données: %v", err)
-	}
+	db := db.GetDB()
 
 	stmt, err := db.Prepare("INSERT INTO USER(id, username, email, password, status, sessioncookie) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
@@ -45,17 +37,14 @@ func InsertFormData(username, email, password string) error {
 	}
 	defer stmt.Close()
 
-	// Note : keep email and username in this order, even if it's in reverse order in the database
 	_, err = stmt.Exec(nextAvailableID(), email, username, password, "offline", "")
 	if err != nil {
 		return fmt.Errorf("erreur lors de l'insertion dans la base de données: %v", err)
 	}
 
 	fmt.Println("Données du formulaire insérées avec succès dans la base de données.")
-	db.Close()
 
 	return nil
-
 }
 
 func Hash(password string) string {
@@ -65,14 +54,12 @@ func Hash(password string) string {
 }
 
 func GetUsers(db *sql.DB) {
-	// Préparation de la requête SQL
 	rows, err := db.Query("SELECT id, username, email, password FROM USER")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
-	// Parcours des lignes de résultat
 	for rows.Next() {
 		var id int
 		var username, email, password string
@@ -91,14 +78,10 @@ func GetUsers(db *sql.DB) {
 }
 
 func nextAvailableID() int {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		return 0
-	}
-	defer db.Close()
+	db := db.GetDB()
 
 	var maxID int
-	err = db.QueryRow("SELECT MAX(id) FROM USER").Scan(&maxID)
+	err := db.QueryRow("SELECT MAX(id) FROM USER").Scan(&maxID)
 	if err != nil {
 		return 0
 	}
@@ -127,11 +110,7 @@ func deleteAllUsers(db *sql.DB) {
 }
 
 func IsUsernameInDB(username string) bool {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	db := db.GetDB()
 
 	rows, err := db.Query("SELECT username FROM USER WHERE username = ?", username)
 	if err != nil {
@@ -143,11 +122,7 @@ func IsUsernameInDB(username string) bool {
 }
 
 func IsEmailInDB(email string) bool {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	db := db.GetDB()
 
 	rows, err := db.Query("SELECT email FROM USER WHERE email = ?", email)
 	if err != nil {
@@ -166,14 +141,11 @@ func IsPasswordCorrect(identifier string, password string) bool {
 		return false
 	}
 
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
+	db := db.GetDB()
 
 	var hashedPassword string
 	var idOfRow int
-	err = db.QueryRow("SELECT password FROM USER WHERE username = ? OR email = ?", identifier, identifier).Scan(&hashedPassword)
+	err := db.QueryRow("SELECT password FROM USER WHERE username = ? OR email = ?", identifier, identifier).Scan(&hashedPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -182,7 +154,6 @@ func IsPasswordCorrect(identifier string, password string) bool {
 		log.Fatal(err)
 	}
 
-	// Si identifier ne correspond pas à l'username ou à l'email, on renvoit false
 	if !isIdentifierPresentInTheRow(identifier, hashedPassword, idOfRow) {
 		return false
 	}
@@ -197,14 +168,11 @@ func IsPasswordCorrect(identifier string, password string) bool {
 }
 
 func isIdentifierPresentInTheRow(identifier string, hashedPassword string, id int) bool {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
+	db := db.GetDB()
 
 	var comparedUsername string
 	var comparedEmail string
-	err = db.QueryRow("SELECT username FROM USER WHERE id = ?", id).Scan(&comparedUsername)
+	err := db.QueryRow("SELECT username FROM USER WHERE id = ?", id).Scan(&comparedUsername)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -216,12 +184,8 @@ func isIdentifierPresentInTheRow(identifier string, hashedPassword string, id in
 }
 
 func ResetSessionData() {
-	db, err := sql.Open("sqlite3", "./database/db.sqlite")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	_, err = db.Exec("UPDATE USER SET status = 'offline'")
+	db := db.GetDB()
+	_, err := db.Exec("UPDATE USER SET status = 'offline'")
 	if err != nil {
 		log.Fatal(err)
 	}

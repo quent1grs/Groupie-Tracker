@@ -35,5 +35,5 @@ func HandleLobby(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "pages/choosegamepage.html")
+	http.ServeFile(w, r, "./pages/choosegamepage.html")
 }
