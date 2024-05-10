@@ -3,7 +3,6 @@ package lobby
 import (
 	session "groupietracker/server/session"
 	"net/http"
-	"strings"
 )
 
 func HandleLobby(w http.ResponseWriter, r *http.Request) {
@@ -17,14 +16,12 @@ func HandleLobby(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cookieContent string
 	if r.Header.Get("cookie") == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	cookieContent = r.Header.Get("cookie")
 
-	cookie := strings.Split(strings.Split(cookieContent, "; ")[1], "=")[1]
+	cookie := session.GetCookie(w, r)
 
 	if !session.IsCookieValid(cookie) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -34,6 +31,5 @@ func HandleLobby(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-
 	http.ServeFile(w, r, "./pages/choosegamepage.html")
 }

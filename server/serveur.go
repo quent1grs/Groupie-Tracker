@@ -4,9 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"groupietracker/database"
-	gamesdb "groupietracker/database/gamesDB"
-	roomsdb "groupietracker/database/roomsDB"
-	roomusersdb "groupietracker/database/roomusersDB"
 	"groupietracker/server/chat"
 	"groupietracker/server/lobby"
 	room "groupietracker/server/room"
@@ -36,10 +33,7 @@ var addr = flag.String("addr", HOST+":"+PORT, "http service address")
 func main() {
 	fmt.Println("Launching server...")
 	fmt.Println("Initializing database...")
-	database.ResetSessionData()
-	gamesdb.ResetTable()
-	roomsdb.DeleteAllRooms()
-	roomusersdb.DeleteAllRoomUsers()
+	database.InitDatabase()
 	chat.ChatScattegories()
 	chat.ChatBlindtest()
 	chat.ChatDeafTest()

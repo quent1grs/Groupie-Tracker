@@ -29,6 +29,8 @@ func IssueCookie() string {
 }
 
 func IsCookieValid(cookie string) bool {
+	fmt.Println("[DEBUG] session.IsCookieValid() called.")
+	fmt.Println("[DEBUG] Cookie : " + cookie)
 	conn := db.GetDB()
 	rows, err := conn.Query("SELECT sessioncookie FROM USER")
 	if err != nil {
@@ -46,6 +48,7 @@ func IsCookieValid(cookie string) bool {
 			return true
 		}
 	}
+	fmt.Println("[DEBUG] Cookie is not valid.")
 	return false
 }
 
@@ -77,9 +80,13 @@ func UpdateCookieInDB(cookie string, username string) {
 }
 
 func GetUsername(w http.ResponseWriter, r *http.Request) string {
-	return strings.Split(strings.Split(r.Header.Get("Cookie"), "; ")[0], "=")[1]
+	return strings.Split(strings.Split(r.Header.Get("Cookie"), "username=")[1], ";")[0]
 }
 
 func GetCookie(w http.ResponseWriter, r *http.Request) string {
-	return strings.Split(strings.Split(r.Header.Get("Cookie"), "; ")[1], "=")[1]
+	return strings.Split(strings.Split(r.Header.Get("Cookie"), "cookie=")[1], ";")[0]
+}
+
+func GetRoomIDCookie(w http.ResponseWriter, r *http.Request) string {
+	return strings.Split(strings.Split(r.Header.Get("Cookie"), "roomIDCookie=")[1], ";")[0]
 }

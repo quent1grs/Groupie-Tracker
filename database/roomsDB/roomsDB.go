@@ -8,8 +8,6 @@ import (
 )
 
 func InsertRoomInDatabase(idRoom int, roomOwner int, maxPlayers int, name string, idGame int) {
-	fmt.Println("[DEBUG] insertRoomInDatabase() called.")
-	defer fmt.Println("[DEBUG] insertRoomInDatabase() ended.")
 
 	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
 

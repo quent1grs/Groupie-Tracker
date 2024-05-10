@@ -183,3 +183,13 @@ func ResetSessionData() {
 		log.Fatal(err)
 	}
 }
+
+// Nettoie la base de données des informations temporaires (ROOM_USERS, GAMES, ROOMS)
+func InitDatabase() {
+	db := db.GetDB()
+	_, err := db.Exec("DELETE FROM ROOM_USERS, GAMES, ROOMS")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("[EVENT:database.InitDatabase()] ROOM_USERS, GAMES, ROOMS tables cleaned.")
+}
