@@ -8,6 +8,7 @@ import (
 
 func InsertUserInRoomUsers(roomID int, userID int) {
 	fmt.Println("[DEBUG] insertUserInRoomUsers() called.")
+	fmt.Println("[DEBUG] roomusersdb.insertUserInRoomUsers() Room ID : " + string(rune(roomID)))
 
 	conn := db.GetDB()
 
@@ -29,6 +30,24 @@ func ResetTable() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func GetRoomAssociatedWithUser(username int) int {
+	conn := db.GetDB()
+
+	rows, err := conn.Query("SELECT id_room FROM ROOM_USERS WHERE id_user = ?", username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var roomID int
+	for rows.Next() {
+		err = rows.Scan(&roomID)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return roomID
 }
 
 func DeleteAllRoomUsers() {

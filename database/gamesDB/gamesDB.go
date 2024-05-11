@@ -3,21 +3,24 @@ package gamesdb
 import (
 	"fmt"
 	"log"
+	"math/rand"
 
 	db "groupietracker/database/DB_Connection"
 )
 
-func CreateGame(name string) int {
+var digits = []rune("0123456789")
+
+func CreateGame(name string, gametype string) int {
 	fmt.Println("[DEBUG] CreateGame() called.")
 	defer fmt.Println("[DEBUG] CreateGame() ended.")
 
 	fmt.Println("[DEBUG] name : " + name)
 
-	id := nextAvailableID()
+	id := getRandomId()
 
 	conn := db.GetDB()
 
-	_, err := conn.Exec("INSERT INTO GAMES (id, name) VALUES (?, ?)", id, name)
+	_, err := conn.Exec("INSERT INTO GAMES (id, name, gameMode) VALUES (?, ?, ?)", id, name, gametype)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -65,26 +68,47 @@ func EnumerateGames() {
 	}
 }
 
-func nextAvailableID() int {
-	fmt.Println("[DEBUG] nextAvailableID() called.")
-	defer fmt.Println("[DEBUG] nextAvailableID() ended.")
+// Génère un identifiant aléatoire à 6 chiffres pour servir d'identifiant de partie
+func getRandomId() int {
+	id := int(digits[rand.Intn(len(digits))])
+	for !isIdUnique(id) {
+		id = 0
+		for i := 0; i < 6; i++ {
+			id = id*10 + int(digits[rand.Intn(len(digits))])
+		}
+	}
+	return id
+}
 
+func GetGameMode(gameID int) string {
 	conn := db.GetDB()
 
-	rows, err := conn.Query("SELECT id FROM GAMES")
+	rows, err := conn.Query("SELECT gameMode FROM GAMES WHERE id = ?", gameID)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
-	i := 1
+	var mode string
 	for rows.Next() {
-		var id int
-		rows.Scan(&id)
-		if id != i {
-			return i
+		err = rows.Scan(&mode)
+		if err != nil {
+			log.Fatal(err)
 		}
-		i++
 	}
-	return 0
+	return mode
+}
+
+func isIdUnique(id int) bool {
+	conn := db.GetDB()
+
+	rows, err := conn.Query("SELECT id FROM GAMES WHERE id = ?", id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return false
+	}
+	return true
 }

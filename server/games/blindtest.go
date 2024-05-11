@@ -2,6 +2,7 @@ package games
 
 import (
 	"encoding/json"
+	"fmt"
 	spotifyapi "groupietracker/spotifyApi"
 	"log"
 	mrand "math/rand"
@@ -41,7 +42,8 @@ var currentMusic PageData
 
 // load the blindtest page
 func HandleBlindtest(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "pages/blindtest.html")
+	fmt.Println("Blindtest")
+	http.ServeFile(w, r, "./pages/blindtest.html")
 }
 
 // function to handle the game logic

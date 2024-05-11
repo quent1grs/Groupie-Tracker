@@ -1,6 +1,13 @@
 package games
 
-import "net/http"
+import (
+	"fmt"
+	gamesdb "groupietracker/database/gamesDB"
+	roomusersdb "groupietracker/database/roomusersDB"
+	userdb "groupietracker/database/userDB"
+	"groupietracker/server/session"
+	"net/http"
+)
 
 // Manages the GAMES table from db.sqlite database.
 
@@ -12,12 +19,30 @@ type Game struct {
 	gameName string
 }
 
-// func HandleCreateGame(w http.ResponseWriter, r *http.Request) {
-// 	// Récupérer le nom de l'utilisateur par le cookie
-// 	username := session.GetUsernameFromCookie(r)
-// 	// Récupérer les données du formulaire
-// 	r.ParseForm()
-// }
+func HandleGame(w http.ResponseWriter, r *http.Request) {
+	// Identifier le jeu à partir de l'username
+	fmt.Println("[DEBUG] games.HandleGame() called.")
+	username := session.GetUsername(w, r)
+	fmt.Println("[DEBUG] Username : " + username)
+
+	userid := userdb.GetIDFromUsername(username)
+	fmt.Println("[DEBUG] User ID : " + string(rune(userid)))
+
+	room := roomusersdb.GetRoomAssociatedWithUser(userid)
+	fmt.Println("[DEBUG] Room : " + string(rune(room)))
+
+	gameMode := gamesdb.GetGameMode(room)
+	fmt.Println("[DEBUG] Game mode : " + gameMode)
+
+	if gameMode == "scattegories" {
+		HandleScattegories(w, r)
+	} else if gameMode == "deaftest" {
+		HandleDeaftest(w, r)
+	} else if gameMode == "blindtest" {
+		HandleBlindtest(w, r)
+	}
+
+}
 
 func HandleDeleteGame() {
 

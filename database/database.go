@@ -188,17 +188,8 @@ func ResetSessionData() {
 func InitDatabase() {
 	db := db.GetDB()
 	_, _ = db.Exec("DELETE FROM ROOM_USERS")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	_, _ = db.Exec("DELETE FROM GAMES")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	_, _ = db.Exec("DELETE FROM ROOMS")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	_, _ = db.Exec("UPDATE USER SET status = 'offline'")
 	_, _ = db.Exec("UPDATE USER SET sessioncookie = ''")
 	fmt.Println("[EVENT:database.InitDatabase()] ROOM_USERS, GAMES, ROOMS tables cleaned.")

@@ -174,7 +174,7 @@
             if (gameType == "song-1") {
               gameType = "blindtest";
             } else if (gameType == "song-2") {
-              gameType = "deafTest";
+              gameType = "deaftest";
             } else if (gameType == "song-3") {
               gameType = "scattegories";
             }
@@ -191,12 +191,44 @@
               data: JSON.stringify({gameName: gameName, gameType: gameType, maxPlayers: maxPlayers, rounds: rounds, roundDuration: roundDuration, categories: categories}),
               success: function(response) {
                 if (response.includes('success')) {
-                  // Récupérer le code de jeu qui suit le mot 'success='
-                  var gameCode = response.split('=')[1];
-                  console.log("[DEBUG] Redirection vers la page de jeu");
-                  // Rediriger vers la page de jeu
-                  // TODO implémenter la redirection selon un url incluant le code de jeu
-                  window.location.href = '/room/' + gameCode;
+                  // Activer la room /joinRoom
+                  console.log("[DEBUG] Game created");
+                  console.log("[DEBUG] Response : " + response)
+                  console.log("[DEBUG] Room ID : " + response.split(' ')[1])
+                  // Timeout pour laisser le temps au serveur de créer la room
+                  time = 30000;
+                  
+                  // setTimeout(function() {
+                    $.ajax({
+                      url: '/joinRoom',
+                      type: 'POST',
+                      data: JSON.stringify({gameCode: response.split(' ')[1]}),
+                      success: function(response) {
+                        if (response.includes('success')) {
+                          console.log("[DEBUG] Game joined");
+                          // Redirection vers la route /game
+                          window.location.href = "/game";
+                        } else {
+                          console.log("[DEBUG] Game join failed");
+                        }
+                      }
+                    });
+                  // }, time);
+                  
+                  // $.ajax({
+                  //   url: '/joinRoom',
+                  //   type: 'POST',
+                  //   data: JSON.stringify({roomID: response.split(' ')[1]}),
+                  //   success: function(response) {
+                  //     if (response.includes('success')) {
+                  //       console.log("[DEBUG] Game joined");
+                  //       // Redirection vers la route /game
+                  //       window.location.href = "/game";
+                  //     } else {
+                  //       console.log("[DEBUG] Game join failed");
+                  //     }
+                  //   }
+                  // });
 
                 } else {
                   console.log("[DEBUG] Game creation failed");
@@ -223,7 +255,9 @@
                 data: JSON.stringify({roomID: roomID}),
                 success: function(response) {
                   if (response.includes('success')) {
-                    
+                    console.log("[DEBUG] Game joined");
+                    // Redirection vers la route /game
+                    window.location.href = "/game";
                   } else {
                     console.log("[DEBUG] Game join failed");
                   }
@@ -241,14 +275,20 @@
                 type: 'POST',
                 data: JSON.stringify({gameCode: gameCode}),
                 success: function(response) {
-                  if (response == 'true') {
+                  if (response == 'ok') {
                     document.getElementById('joinGameBtn').disabled = false;
                     document.getElementById('gameCodeError').style.display = 'none';
                     document.getElementById('joinGameBtn').style.backgroundColor = 'green';
-                  } else {
+                  } else if (response == 'inexistent') {
                     document.getElementById('gameCodeError').style.display = 'block';
                     document.getElementById('joinGameBtn').disabled = true;
                     document.getElementById('joinGameBtn').style.backgroundColor = 'grey';
+                    document.getElementById('gameCodeError').innerHTML = 'Game code not valid';
+                  } else if (response == 'full') {
+                    document.getElementById('gameCodeError').style.display = 'block';
+                    document.getElementById('joinGameBtn').disabled = true;
+                    document.getElementById('joinGameBtn').style.backgroundColor = 'grey';
+                    document.getElementById('gameCodeError').innerHTML = 'Game is full';
                   }
                 }
               });

@@ -24,6 +24,10 @@ type CreateRoomRequest struct {
 	Scattegories  []string `json:"scattegories"`
 }
 
+type ControlCodeRequest struct {
+	GameCode string `json:"gameCode"`
+}
+
 func HandleRoom(w http.ResponseWriter, r *http.Request) {
 	roomID := r.URL.Path[6:]
 	user := r.Header.Get("username")
@@ -35,6 +39,28 @@ func HandleRoom(w http.ResponseWriter, r *http.Request) {
 	}
 	roomUsers.InsertUserInRoom(roomID, user)
 	http.Redirect(w, r, "/room/"+roomID, http.StatusSeeOther)
+}
+
+func HandleJoinRoom(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	fmt.Println("[DEBUG] Handling join room.")
+	var request ControlCodeRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	gameCode, _ := strconv.Atoi(request.GameCode)
+	fmt.Println("[DEBUG] room.HandleJoinRoom() Game code: ", gameCode)
+	fmt.Println("[DEBUG] room.HandleJoinRoom() User: ", userdb.GetIDFromUsername(session.GetUsername(w, r)))
+
+	roomusersdb.InsertUserInRoomUsers(gameCode, userdb.GetIDFromUsername(session.GetUsername(w, r)))
+	fmt.Fprint(w, "success")
 }
 
 func HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
@@ -56,19 +82,17 @@ func HandleCreateRoom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	gameID := gamesdb.CreateGame(request.GameName)
+	gameID := gamesdb.CreateGame(request.GameName, request.GameType)
 	fmt.Println("[DEBUG] Game created with ID: ", gameID)
-	roomID := roomsdb.GetNextAvailableID()
-	fmt.Println("[DEBUG] Room created with ID: ", roomID)
 	maxPlayers, _ := strconv.Atoi(request.MaxPlayers) // Convert string to int
 	fmt.Println("[DEBUG] Max players: ", maxPlayers)
-	roomsdb.InsertRoomInDatabase(roomID, userdb.GetIDFromUsername(user), maxPlayers, request.GameName, gameID)
+	roomsdb.InsertRoomInDatabase(gameID, userdb.GetIDFromUsername(user), maxPlayers, request.GameName, gameID)
 	fmt.Println("[DEBUG] Room inserted in database.")
 
-	roomusersdb.InsertUserInRoomUsers(roomID, userdb.GetIDFromUsername(user))
-	fmt.Println("[DEBUG] User inserted in room users.")
-	fmt.Fprint(w, "success="+string(rune(roomID)))
-	http.Redirect(w, r, "/room/"+string(rune(roomID)), http.StatusSeeOther)
+	// roomusersdb.InsertUserInRoomUsers(gameID, userdb.GetIDFromUsername(user))
+	// fmt.Println("[DEBUG] User inserted in room users.")
+	fmt.Println("[DEBUG] room.go.HandleCreateRoom() : Room created with ID: ", gameID)
+	fmt.Fprint(w, "success "+strconv.Itoa(gameID))
 }
 
 func CleaningRooms() {
@@ -86,6 +110,22 @@ func DeleteRoomFromDB(roomID string) {
 		log.Fatal(err)
 	}
 	fmt.Println("[EVENT] Room" + roomID + " deleted from database.")
+}
+
+func HandleControlCode(w http.ResponseWriter, r *http.Request) {
+	var request ControlCodeRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if !doesRoomExist(request.GameCode) {
+		fmt.Fprintln(w, "inexistent")
+	}
+	if isRoomFull(request.GameCode) {
+		fmt.Fprintln(w, "full")
+	}
+	fmt.Fprintln(w, "ok")
 }
 
 func doesRoomExist(roomID string) bool {
