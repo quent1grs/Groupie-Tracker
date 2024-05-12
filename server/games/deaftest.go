@@ -54,7 +54,6 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		_, message, err := conn.ReadMessage()
-		println(string(message))
 		if err != nil {
 			log.Println("Error reading message:", err)
 
@@ -77,12 +76,27 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if !user.CorrectAnswer {
-			userResponse := string(message)
-			var response map[string]string
+			var wsResponse map[string]interface{}
+			err := json.Unmarshal(message, &wsResponse)
+			if err != nil {
+				log.Println("Error parsing message:", err)
+				return
+			}
+
+			userResponse, resp := wsResponse["answer"].(string)
+			remainingTime, time := wsResponse["remainingTime"].(float64)
+			if !resp || !time {
+				println("Error getting data from message:", wsResponse)
+			}
+
 			status, response := CheckAnswer(userResponse, currentMusic)
 			if status {
 				user.CorrectAnswer = true
-				user.Score += 1
+				if userResponse == currentMusic.Title || userResponse == currentMusic.Artist {
+					user.Score += int(remainingTime)
+				} else if userResponse == currentMusic.Artist+" "+currentMusic.Title || userResponse == currentMusic.Title+" "+currentMusic.Artist {
+					user.Score += int(remainingTime) + 5
+				}
 			}
 
 			SendMessage(response, conn)

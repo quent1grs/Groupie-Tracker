@@ -145,9 +145,7 @@ func ParsePlaylist(body []byte) Music {
 
 	for _, item := range playlist.Tracks.Items {
 		music.MusicPreview = append(music.MusicPreview, item.Track.Preview)
-		println(item.Track.Preview)
 		title := item.Track.Name
-		println(title)
 		music.Titles = append(music.Titles, title)
 		artist := item.Track.Artists[0].Name
 		music.Artists = append(music.Artists, artist)

@@ -23,6 +23,8 @@ var ws = new WebSocket('ws://localhost:8080/chatblindtestws')
         ws.onclose = () => {
             delete ws;
         }
+
+        var musicCountdown = 30;
         
         window.onload = function() {
             var conn = new WebSocket('ws://localhost:8080/blindtestws');
@@ -43,42 +45,34 @@ var ws = new WebSocket('ws://localhost:8080/chatblindtestws')
                 console.log("Connection closed!");
             };
 
-    
-            function startMusicCountdown() {
-                var countdownElement = document.getElementById('countdown');
-                var musicCountdown = 30;
-                countdownElement.innerText = musicCountdown;
-
-                var musicCountdownInterval = setInterval(function() {
-                    musicCountdown--;
-                    countdownElement.innerText = musicCountdown;
-
-                    if (musicCountdown <= 0) {
-                        clearInterval(musicCountdownInterval);
-                        conn.send('end_music');
-                    }
-                }, 1000);
-            }
+            var title;
+            var artist;
 
             conn.onmessage = function(e) {
                 if (firstMessage === true) {
                     firstMessage = false;
                     return;
                 }
-
                 var data;
+                var previousSong;
+                var countdownElement = document.getElementById('countdown');
+
                 try {
                     data = JSON.parse(e.data);
                 } catch (error) {
                     data = e.data;
                 }
+                console.log(data.Artist);
+                console.log(data.Title);
+                console.log(title);
+                console.log(artist);
 
-                console.log(data);
                 var audio = document.getElementById('audio');
                 var countdownElement = document.getElementById('countdown');
 
                 if (data === 'start_music') {
                     var countdown = 3;
+                    var musicCountdownInterval;
                     countdownElement.innerText = countdown;
 
                     var countdownInterval = setInterval(function() {
@@ -88,10 +82,25 @@ var ws = new WebSocket('ws://localhost:8080/chatblindtestws')
                         if (countdown <= 0) {
                             clearInterval(countdownInterval);
                             audio.play();
-                            startMusicCountdown();
+                            musicCountdown = 30;
+                            countdownElement.innerText = musicCountdown;
+
+                            musicCountdownInterval = setInterval(function() {
+                                musicCountdown--;
+                                countdownElement.innerText = musicCountdown;
+
+                                if (musicCountdown <= 0) {
+                                    clearInterval(musicCountdownInterval);
+                                    var previous = document.getElementById('previous');
+                                    previous.innerText = "Previous song: " + title + " by " + artist;
+                                    conn.send('end_music');
+                                }
+                            }, 1000);
                         }
                     }, 1000);
                 } else if (data.Preview) {
+                    title = data.Title;
+                    artist = data.Artist;
                     if (firstload === true) {
                         audio.src = data.Preview;
                         audio.load();
@@ -108,7 +117,20 @@ var ws = new WebSocket('ws://localhost:8080/chatblindtestws')
                                 clearInterval(countdownInterval);
                                 audio.src = data.Preview;
                                 audio.load();
-                                startMusicCountdown();
+                                musicCountdown = 30;
+                                countdownElement.innerText = musicCountdown;
+
+                                musicCountdownInterval = setInterval(function() {
+                                    musicCountdown--;
+                                    countdownElement.innerText = musicCountdown;
+
+                                    if (musicCountdown <= 0) {
+                                        clearInterval(musicCountdownInterval);
+                                        var previous = document.getElementById('previous');
+                                        previous.innerText = "Previous song: " + title + " by " + artist;
+                                        conn.send('end_music');
+                                    }
+                                }, 1000);
                             }
                         }, 1000);
                     }
@@ -118,9 +140,14 @@ var ws = new WebSocket('ws://localhost:8080/chatblindtestws')
             document.querySelector('form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 if (conn.readyState === WebSocket.OPEN) {
+                    remainingTime = parseInt(document.getElementById('countdown').innerText, 10);
                     var answer = document.querySelector('input[name="blindtest_answer"]').value;
                     if (typeof answer === 'string') {
-                        conn.send(answer);
+                        var message = {
+                            answer: answer,
+                            remainingTime: remainingTime,
+                        };
+                        conn.send(JSON.stringify(message));
                     } else {
                         console.error('Answer is not a string:', answer);
                     }
