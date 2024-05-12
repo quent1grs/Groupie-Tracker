@@ -7,6 +7,7 @@ import (
 	"groupietracker/server/chat"
 	"groupietracker/server/lobby"
 	room "groupietracker/server/room"
+	ws "groupietracker/server/ws"
 	"log"
 	"net/http"
 	"time"
@@ -69,7 +70,8 @@ func main() {
 	http.HandleFunc("/createRoom", room.HandleCreateRoom)
 	http.HandleFunc("/joinRoom", room.HandleJoinRoom)
 	http.HandleFunc("/game", games.HandleGame)
-	r.HandleFunc("/room/{roomID}", games.HandleRoom)
+	// Pour les routes de websocket associées aux rooms (/ws/roomID)
+	r.HandleFunc("/ws/{roomID}", ws.WsHandler)
 
 	fmt.Println(time.Now().String() + " Server is running on port " + PORT)
 
