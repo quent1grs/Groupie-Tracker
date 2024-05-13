@@ -102,7 +102,7 @@
             <filter id="neon-effect" x="-50%" y="-50%" width="200%" height="200%">
               <feFlood result="flood" flood-color="red" flood-opacity="0.5"></feFlood>
               <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
-              <feGaussianBlur in="mask" result="blurred" stdDeviation="1"></feGaussianBlur> <!-- Valeur réduite pour moins de flou -->
+              <feGaussianBlur in="mask" result="blurred" stdDeviation="1"></feGaussianBlur>
               <feMerge>
                 <feMergeNode in="blurred"></feMergeNode>
                 <feMergeNode in="SourceGraphic"></feMergeNode>
@@ -161,9 +161,7 @@
         <script>
           document.getElementById("createGame").onclick = function () {
             var gameName = document.getElementById("gameName").value;
-            // console.log("[DEBUG] gameName : " + gameName);
             var gameType = document.getElementsByClassName("checked")[0].id;
-            // console.log("[DEBUG] gameType : " + gameType);
             var maxPlayers = document.getElementById("maxPlayers").value;
             var rounds = document.getElementById("rounds").value;
             var roundDuration = document.getElementById("roundDuration").value;
@@ -195,10 +193,8 @@
                   console.log("[DEBUG] Game created");
                   console.log("[DEBUG] Response : " + response)
                   console.log("[DEBUG] Room ID : " + response.split(' ')[1])
-                  // Timeout pour laisser le temps au serveur de créer la room
                   time = 30000;
                   
-                  // setTimeout(function() {
                     $.ajax({
                       url: '/joinRoom',
                       type: 'POST',
@@ -206,29 +202,12 @@
                       success: function(response) {
                         if (response.includes('success')) {
                           console.log("[DEBUG] Game joined");
-                          // Redirection vers la route /game
                           window.location.href = "/game";
                         } else {
                           console.log("[DEBUG] Game join failed");
                         }
                       }
                     });
-                  // }, time);
-                  
-                  // $.ajax({
-                  //   url: '/joinRoom',
-                  //   type: 'POST',
-                  //   data: JSON.stringify({roomID: response.split(' ')[1]}),
-                  //   success: function(response) {
-                  //     if (response.includes('success')) {
-                  //       console.log("[DEBUG] Game joined");
-                  //       // Redirection vers la route /game
-                  //       window.location.href = "/game";
-                  //     } else {
-                  //       console.log("[DEBUG] Game join failed");
-                  //     }
-                  //   }
-                  // });
 
                 } else {
                   console.log("[DEBUG] Game creation failed");
@@ -256,7 +235,6 @@
                 success: function(response) {
                   if (response.includes('success')) {
                     console.log("[DEBUG] Game joined");
-                    // Redirection vers la route /game
                     window.location.href = "/game";
                   } else {
                     console.log("[DEBUG] Game join failed");

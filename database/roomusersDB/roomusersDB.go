@@ -1,14 +1,11 @@
 package roomusersdb
 
 import (
-	"fmt"
 	db "groupietracker/database/DB_Connection"
 	"log"
 )
 
 func InsertUserInRoomUsers(roomID int, userID int) {
-	fmt.Println("[DEBUG] insertUserInRoomUsers() called.")
-	fmt.Println("[DEBUG] roomusersdb.insertUserInRoomUsers() Room ID : " + string(rune(roomID)))
 
 	conn := db.GetDB()
 
@@ -16,7 +13,7 @@ func InsertUserInRoomUsers(roomID int, userID int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("[EVENT] User" + string(rune(userID)) + " added to room" + string(rune(roomID)) + ".")
+
 }
 
 func ResetTable() {

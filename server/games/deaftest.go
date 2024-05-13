@@ -16,7 +16,7 @@ func HandleDeaftest(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeaftestWs(w http.ResponseWriter, r *http.Request) {
-	// UserTable := NewUserTable()
+	UserTable := NewUserTable()
 	var music spotifyapi.Music
 
 	currentMusic := PageData{}

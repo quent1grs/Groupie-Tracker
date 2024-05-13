@@ -18,9 +18,7 @@ func Database() {
 	}
 
 	if isEmpty {
-		// user_id = 0
 	} else {
-		// user_id, err = getNextID(db)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -184,7 +182,6 @@ func ResetSessionData() {
 	}
 }
 
-// Nettoie la base de données des informations temporaires (ROOM_USERS, GAMES, ROOMS)
 func InitDatabase() {
 	db := db.GetDB()
 	_, _ = db.Exec("DELETE FROM ROOM_USERS")

@@ -11,10 +11,6 @@ import (
 var digits = []rune("0123456789")
 
 func CreateGame(name string, gametype string) int {
-	fmt.Println("[DEBUG] CreateGame() called.")
-	defer fmt.Println("[DEBUG] CreateGame() ended.")
-
-	fmt.Println("[DEBUG] name : " + name)
 
 	id := getRandomId()
 
@@ -25,12 +21,10 @@ func CreateGame(name string, gametype string) int {
 		log.Fatal(err)
 	}
 
-	fmt.Println("[EVENT] Game" + string(rune(id)) + " created.")
 	return id
 }
 
 func DeleteGameFromDB(gameID string) {
-	fmt.Println("[DEBUG] DeleteGameFromDB() called.")
 
 	conn := db.GetDB()
 
@@ -38,8 +32,6 @@ func DeleteGameFromDB(gameID string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("[EVENT] Game" + gameID + " deleted from database.")
-	fmt.Println("[DEBUG] DeleteGameFromDB() ended.")
 }
 
 func ResetTable() {
@@ -68,7 +60,6 @@ func EnumerateGames() {
 	}
 }
 
-// Génère un identifiant aléatoire à 6 chiffres pour servir d'identifiant de partie
 func getRandomId() int {
 	id := int(digits[rand.Intn(len(digits))])
 	for !isIdUnique(id) {

@@ -3,10 +3,9 @@ var ws = new WebSocket('ws://localhost:8080/chatdeaftestws');
 function sendMessage() {
     var data = {
         "message": document.getElementById("textchat").value,
-        // "username": ,
     };
     ws.send(JSON.stringify(data));
-    document.getElementById("textchat").value = ""; // Effacez le contenu de l'input
+    document.getElementById("textchat").value = "";
 }
 
 ws.onmessage = (e) => {

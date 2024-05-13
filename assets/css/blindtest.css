@@ -34,12 +34,12 @@ audio {
   left: 50%;
   transform: translateX(-50%);
   animation: fadeIn 3s ease-out;
-  background-color: #f2b120; /* Couleur de fond rétro */
-  color: #fff; /* Texte blanc pour contraster avec le fond */
+  background-color: #f2b120;
+  color: #fff;
   border: none;
-  border-radius: 30px; /* Bordures légèrement arrondies */
+  border-radius: 30px;
   padding: 10px 20px;
-  font-family: 'Press Start 2P'; /* Police rétro */
-  box-shadow: 0 4px #c69c6d; /* Ombre pour donner un effet de bouton pressé */
+  font-family: 'Press Start 2P';
+  box-shadow: 0 4px #c69c6d;
   cursor: pointer;
   font-size: 1.5em;}

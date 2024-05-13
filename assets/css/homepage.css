@@ -19,14 +19,14 @@ login-signup {
 }
 
 #bg-video {
-    position: fixed; /* Pour que la vidéo soit positionnée en arrière-plan */
+    position: fixed;
     right: 0;
     bottom: 0;
     min-width: 100%; 
     min-height: 100%;
     width: auto; 
     height: auto;
-    z-index: -1; /* Pour la placer derrière le contenu */
+    z-index: -1;
   }
   
 
@@ -235,7 +235,6 @@ h6 span:last-child{
     border-radius: 6px;
     left: 0;
     top: 50%;
-    /* transform: translateY(-50%); */
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-backface-visibility: hidden;
@@ -422,27 +421,12 @@ h6 span:last-child{
     display: block;
 }
 
-/* Classe associée au bouton de soumission du formulaire dans la page de login/registering.
-Grise le bouton, et le rend figé */
 .disabledbtn {
     cursor: not-allowed;
     background-color: #c4c3ca;
     color: #ffffff;
     box-shadow: none;
 }
-
-/* .disabled:hover {
-    background-color: #c4c3ca;
-    color: #ffffff;
-    box-shadow: none;
-} */
-
-/* #container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-} */
 
 #panel-container {
     top: 50%;

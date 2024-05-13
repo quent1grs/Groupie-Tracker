@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	db "groupietracker/database/DB_Connection" // importez votre package DB_Connection
+	db "groupietracker/database/DB_Connection"
 )
 
 func InsertRoomInDatabase(idRoom int, roomOwner int, maxPlayers int, name string, idGame int) {
 
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	_, err := conn.Exec("INSERT INTO ROOMS (id, created_by, max_player, name, id_game) VALUES (?, ?, ?, ?, ?)", idRoom, roomOwner, maxPlayers, name, idGame)
 	if err != nil {
@@ -19,7 +19,7 @@ func InsertRoomInDatabase(idRoom int, roomOwner int, maxPlayers int, name string
 }
 
 func DeleteAllRooms() {
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	_, err := conn.Exec("DELETE FROM ROOMS")
 	if err != nil {
@@ -28,10 +28,8 @@ func DeleteAllRooms() {
 }
 
 func GetNextAvailableID() int {
-	fmt.Println("[DEBUG] roomsdb.GetNextAvailableID() called.")
-	defer fmt.Println("[DEBUG] roomsdb.GetNextAvailableID() ended.")
 
-	conn := db.GetDB() // utilisez la fonction de connexion de votre package DB_Connection
+	conn := db.GetDB()
 
 	rows, err := conn.Query("SELECT id FROM ROOMS")
 	if err != nil {

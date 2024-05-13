@@ -2,23 +2,21 @@
 
 * {
   box-sizing: border-box;
-  overflow: hidden; /* Hide scrollbars */
+  overflow: hidden;
 }
 
 #bg-video {
-  position: fixed; /* osu absolute selon le besoin */ /* Loïc : ait modifié de absolute à fixed, 01/05/2024 */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   min-height: 100%; 
-  /* max-width: 120% ;
-  max-height:120%; */
   min-height: 100%;
   height: 100%;
   width: 100%;
   object-fit: cover;
-  z-index: -100; /* Assurez-vous que la vidéo reste en arrière-plan */
+  z-index: -100;
 }
 
 html, body {
@@ -109,14 +107,14 @@ img {
   }
 }
 .card-text {
-  position: absolute; /* Positionne le texte sur l'image */
-  bottom: 10px; /* Ajustez selon le besoin */
+  position: absolute;
+  bottom: 10px;
   left: 50%;
-  transform: translateX(-50%); /* Centre le texte horizontalement */
-  color: rgba(10, 147, 232, 0.665); /* Couleur du texte */
-  font-family: 'Press Start 2P'; /* Exemple de police */
-  font-size: 24px; /* Augmente la taille du texte */
-  font-weight: bold; /* Met le texte en gras */
+  transform: translateX(-50%);
+  color: rgba(10, 147, 232, 0.665);
+  font-family: 'Press Start 2P';
+  font-size: 24px;
+  font-weight: bold;
   transition: transform 0.5s ease;
 }
 
@@ -124,7 +122,7 @@ img {
 #item-2:checked ~ .cards #song-2 .card-text,
 #item-3:checked ~ .cards #song-3 .card-text {
   display: block;
-  animation: fadeIn 2s ease-out; /* Applique l'animation fadeIn sur 1 seconde */
+  animation: fadeIn 2s ease-out;
   animation: cardtexteffect 1s infinite alternate ease-in-out;
 }
 
@@ -138,25 +136,25 @@ img {
   display: none;
   margin: 0 10px;
   animation: fadeIn 3s ease-out;
-  background-color: #f2b120; /* Couleur de fond rétro */
-  color: #fff; /* Texte blanc pour contraster avec le fond */
+  background-color: #f2b120;
+  color: #fff;
   border: none;
-  border-radius: 5px; /* Bordures légèrement arrondies */
+  border-radius: 5px;
   padding: 10px 20px;
-  font-family: 'Press Start 2P', cursive; /* Police rétro */
-  box-shadow: 0 4px #c69c6d; /* Ombre pour donner un effet de bouton pressé */
+  font-family: 'Press Start 2P', cursive;
+  box-shadow: 0 4px #c69c6d;
   cursor: pointer;
 }
 
 .hidden-btn:hover {
   background-color: #c69c6d;
   box-shadow: 0 2px #a67c52;
-  transform: translateX(-50%) translateY(2px); /* Inclut translateX pour maintenir la position horizontale */
+  transform: translateX(-50%) translateY(2px);
 }
 
 .text-up {
   
-    transform: translateX(-50%) translateY(-120px); /* Ajoutez translateX(-50%) pour maintenir le centrage horizontal */
+    transform: translateX(-50%) translateY(-120px);
     transition: transform 1.5s ease;
 }
 
@@ -221,7 +219,7 @@ img {
   border-bottom: 2px solid black;
 }
 
-/* Bouton arrondi en "pilule" */
+
 #joinGame {
   background-color: #f2b120;
   color: white;
@@ -250,7 +248,7 @@ img {
   flex: 1;
 }
 
-.setting { /* Affichés en ligne de taille identique */
+.setting {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -294,7 +292,6 @@ img {
   border: 2px solid #c69c6d;
 }
 
-/* élément gameCode : contenant de gameCodeInput, du bouton joingame et de la div ghostDiv placée pour créer un espace vide à droite, laissant gameCodeInput au milieu et joingame à gauche */
 #gameCode {
   display: flex;
   justify-content: center;
@@ -307,26 +304,12 @@ img {
   background-color: #c69c6d;
 }
 
-/* $btn-close-width:            1em;
-$btn-close-height:           $btn-close-width;
-$btn-close-padding-x:        .25em;
-$btn-close-padding-y:        $btn-close-padding-x;
-$btn-close-color:            $black;
-$btn-close-bg:               url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$btn-close-color}'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
-$btn-close-focus-shadow:     $input-btn-focus-box-shadow;
-$btn-close-opacity:          .5;
-$btn-close-hover-opacity:    .75;
-$btn-close-focus-opacity:    1;
-$btn-close-disabled-opacity: .25;
-$btn-close-white-filter:     invert(1) grayscale(100%) brightness(200%); */
-
 .btn-close {
   width: 1em;
   height: 1em;
   padding: .25em;
   color: black;
   background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
-  /* filter: invert(1) grayscale(100%) brightness(200%); */
   opacity: .5;
   cursor: pointer;
 }
@@ -359,14 +342,14 @@ $btn-close-white-filter:     invert(1) grayscale(100%) brightness(200%); */
 @keyframes neonEffect {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
     text-shadow:
-      0 0 0.25vw #c30bc0, /* Réduit la dispersion de l'ombre */
-      0.05vw 0 0.25vw #c30b0b, /* Réduit la dispersion et l'intensité */
-      0.15vw 0 0.25vw #c30b0b, /* Ajustements similaires pour les autres ombres */
+      0 0 0.25vw #c30bc0,
+      0.05vw 0 0.25vw #c30b0b,
+      0.15vw 0 0.25vw #c30b0b,
       0 0 0vw #c30b0b,
       0.05vw 0 0vw #c30b0b,
       0.15vw 0 0vw #c30b0b,
       0 0 0vw #c30b0b,
-      0.05vw 0 0vw #c30b0b, /* Couleur plus douce pour une ombre moins intense */
+      0.05vw 0 0vw #c30b0b,
       0.15vw 0 0vw #c30b0b;
   }
 
@@ -377,14 +360,14 @@ $btn-close-white-filter:     invert(1) grayscale(100%) brightness(200%); */
 @keyframes cardtexteffect {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
     text-shadow:
-      0 0 0.25vw #f9f6f6, /* Réduit la dispersion de l'ombre */
-      0.05vw 0 0.25vw #f9f6f6, /* Réduit la dispersion et l'intensité */
-      0.15vw 0 0.25vw #f9f6f6, /* Ajustements similaires pour les autres ombres */
+      0 0 0.25vw #f9f6f6,
+      0.05vw 0 0.25vw #f9f6f6,
+      0.15vw 0 0.25vw #f9f6f6,
       0 0 0vw #f9f6f6,
       0.05vw 0 0vw #f9f6f6,
       0.15vw 0 0vw #f9f6f6,
       0 0 0vw #f9f6f6,
-      0.05vw 0 0vw #f9f6f6, /* Couleur plus douce pour une ombre moins intense */
+      0.05vw 0 0vw #f9f6f6,
       0.15vw 0 0vw #f9f6f6;
   }
 

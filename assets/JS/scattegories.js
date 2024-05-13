@@ -18,18 +18,17 @@
             }
         });
 
-        let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''); // Définissez la variable letters
-        let letter = letters.splice(Math.floor(Math.random() * letters.length), 1)[0]; // Choisissez une lettre au hasard et supprimez-la du tableau
+        let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        let letter = letters.splice(Math.floor(Math.random() * letters.length), 1)[0];
         document.getElementById('letter').textContent = letter; 
     };
 
     function sendMessage() {
         var data = {
             "message": document.getElementById("textchat").value,
-            // "username": ,
         };
         ws.send(JSON.stringify(data));
-        document.getElementById("textchat").value = ""; // Effacez le contenu de l'input
+        document.getElementById("textchat").value = "";
     }
     
         ws.onmessage = (e) => {
