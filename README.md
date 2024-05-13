@@ -46,4 +46,5 @@ You need to download Golang and JavaScript
 https://github.com/loicglanoisatynov
 ### Gros Quentin
 https://github.com/quent1grs
-### Lina Galmiche 
+### Nicolas Galmiche 
+https://github.com/Zephied
