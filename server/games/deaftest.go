@@ -2,6 +2,8 @@ package games
 
 import (
 	"encoding/json"
+	"groupietracker/server/session"
+	ws "groupietracker/server/ws"
 	spotifyapi "groupietracker/spotifyApi"
 	"log"
 	"net/http"
@@ -14,9 +16,10 @@ func HandleDeaftest(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeaftestWs(w http.ResponseWriter, r *http.Request) {
-	UserTable := NewUserTable()
+	// UserTable := NewUserTable()
 	var music spotifyapi.Music
 
+	currentMusic := PageData{}
 	if currentMusic.Artist == "" {
 		body := spotifyapi.GetPlaylist("https://api.spotify.com/v1/playlists/3hhUZQwNteEDClZTu4XY9X")
 		music = spotifyapi.ParsePlaylist(body)
@@ -28,9 +31,9 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	// defer conn.Close()
+	roomID := session.GetRoomIDCookie(w, r)
 
-	clients = append(clients, conn)
+	clients := ws.Rooms[roomID]
 
 	jsonData, err := json.Marshal(currentMusic)
 	if err != nil {
@@ -38,7 +41,7 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, client := range clients {
+	for _, client := range clients.GetClientsWs() {
 		err = client.WriteMessage(websocket.TextMessage, jsonData)
 		if err != nil {
 			log.Println(err)
@@ -54,25 +57,21 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		_, message, err := conn.ReadMessage()
-		if err != nil {
+		if err != nil { // If the client disconnects
 			log.Println("Error reading message:", err)
 
-			for i, client := range clients {
+			for i, client := range clients.ClientsWs {
 				if client == conn {
-					clients = append(clients[:i], clients[i+1:]...)
+					clients.ClientsWs = append(clients.ClientsWs[:i], clients.ClientsWs[i+1:]...)
 					break
 				}
 			}
 			break
 		}
 
-		user, exist := UserTable.GetUser(r.Header.Get("Cookie"))
-		if !exist {
-			user = &User{
-				Token: r.Header.Get("Cookie"),
-				Score: 0,
-			}
-			UserTable.AddUser(r.Header.Get("Cookie"), user)
+		user := &User{
+			Token: r.Header.Get("Cookie"),
+			Score: 0,
 		}
 
 		if !user.CorrectAnswer {
@@ -103,7 +102,7 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if string(message) == "Change_song" {
-			NextMusic(&currentMusic, &music)
+			NextMusic(&currentMusic, &music, ws.Rooms[roomID])
 		}
 	}
 }

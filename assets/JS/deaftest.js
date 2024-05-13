@@ -1,5 +1,5 @@
 window.onload = function() {
-    var conn = new WebSocket('ws://localhost:8080/deaftestws');
+    var conn = new WebSocket('ws://localhost:8080/roomws');
     console.log(conn);
 
     var intervalId;
@@ -57,6 +57,7 @@ window.onload = function() {
                 var message = {
                     answer: answer,
                     remainingTime: remainingTime,
+                    game: 'deaftest',
                 };
                 conn.send(JSON.stringify(message));
             } else {
