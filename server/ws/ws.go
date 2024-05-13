@@ -1,7 +1,8 @@
 package ws
 
 import (
-	"fmt"
+	"encoding/json"
+	"log"
 	"net/http"
 
 	session "groupietracker/server/session"
@@ -13,8 +14,9 @@ import (
 
 // Stores the clients in a room.
 type Room struct {
-	usernames map[string]bool
-	clients   map[*websocket.Conn]bool
+	Usernames map[string]bool
+	Clients   map[*websocket.Conn]bool
+	ClientsWs []*websocket.Conn
 }
 
 // Stores the rooms.
@@ -25,60 +27,103 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+// Handles the WS connection sent by the client thru the "/ws" endpoint, reached by javascript scripts.
 func WsHandler(w http.ResponseWriter, r *http.Request) {
-	// Select the websocket connection and the room ID.
-	// roomID := session.GetRoomIDCookie(w, r)
-	// conn := GetConnection(w, r)
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Erreur lors de l'upgrade de la connexion WebSocket:", err)
+		return
+	}
+	defer conn.Close()
 
-	// OR
+	// Récupère le nom de l'utilisateur et le roomID
+	username := session.GetUsername(w, r)
+	roomID := session.GetRoomIDCookie(w, r)
 
-	// vars := mux.Vars(r)
-	// roomID := vars["roomID"]
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil { // Si l'utilisateur se déconnecte,
+			delete(Rooms[roomID].Clients, conn)
+			log.Printf("Déconnexion de l'utilisateur %s de la room %s", username, roomID)
+			break
+		}
+
+		// Analyser le message JSON
+		var message struct {
+			Answer        string `json:"answer"`
+			RemainingTime int    `json:"remainingTime"`
+			Game          string `json:"game"`
+		}
+		if err := json.Unmarshal(msg, &message); err != nil {
+			log.Println("Erreur lors de l'analyse du message JSON:", err)
+			continue
+		}
+
+		// Diriger le message vers le gestionnaire approprié en fonction du jeu
+		switch message.Game {
+		case "deaftest":
+			http.Redirect(w, r, "/deaftestws", http.StatusSeeOther)
+		case "blindtest":
+			http.Redirect(w, r, "/blindtestws", http.StatusSeeOther)
+		case "scattegories":
+			http.Redirect(w, r, "/ScattegoriesGame", http.StatusSeeOther)
+		default:
+			log.Printf("Jeu inconnu: %s", message.Game)
+		}
+	}
 }
 
 func CreateNewWSAndAddToRoom(w http.ResponseWriter, r *http.Request, roomID string) {
-	fmt.Println("[DEBUG] ws.CreateNewWSAndAddToRoom() called.")
-
 	conn, _ := upgrader.Upgrade(w, r, nil)
 
 	Rooms[roomID] = Room{
-		clients: make(map[*websocket.Conn]bool),
+		Clients: make(map[*websocket.Conn]bool),
 	}
 
-	Rooms[roomID].clients[conn] = true
+	Rooms[roomID].Clients[conn] = true
 }
 
 func AddNewRoom(roomID string) {
-	fmt.Println("[DEBUG] ws.AddNewRoom() called.")
-
 	var newRoom Room
-	newRoom.clients = make(map[*websocket.Conn]bool)
+	newRoom.Clients = make(map[*websocket.Conn]bool)
 	Rooms[roomID] = newRoom
 
-	showRooms()
 }
 
-func GetConnection(w http.ResponseWriter, r *http.Request) *websocket.Conn {
-	// Récupère le nom de l'utilisateur
-	username := session.GetUsername(w, r)
-	// Récupère le roomID
-	roomID := session.GetRoomIDCookie(w, r)
+// func GetConnection(w http.ResponseWriter, r *http.Request) *websocket.Conn {
+// 	conn, err := upgrader.Upgrade(w, r, nil)
+// 	if err != nil {
+// 		log.Println("Erreur lors de l'upgrade de la connexion WebSocket:", err)
+// 	}
+// 	roomID := session.GetRoomIDCookie(w, r)
 
-	for c := range Rooms[roomID].clients {
-		if Rooms[roomID].usernames[username] {
-			return c
-		}
-	}
+// 	for c, _ := range Rooms[roomID].Clients {
+// 		if c.LocalAddr().String() == conn.LocalAddr().String() {
+// 			return c
+// 		}
+// 	} GroupieTracker0!
 
-	return nil
+// 	return nil
+// }
+
+func GetRoom(roomID string) Room {
+	return Rooms[roomID]
+}
+
+func (r *Room) GetConnections() map[*websocket.Conn]bool {
+	return r.Clients
+}
+
+func (r *Room) GetClientsWs() []*websocket.Conn {
+	return r.ClientsWs
 }
 
 // DEBUG FUNCTIONS
-func showRooms() {
-	for k, v := range Rooms {
-		println("Room ID : " + k)
-		for c := range v.clients {
-			println("Client : " + c.LocalAddr().String())
-		}
-	}
-}
+// func ShowRooms() {
+// 	for k, v := range Rooms {
+// 		println("Room ID : " + k)
+// 		for c := range v.Clients {
+// 			println("Client : " + c.LocalAddr().String())
+// 		}
+// 	}
+// }
