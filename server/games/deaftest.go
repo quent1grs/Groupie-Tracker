@@ -69,13 +69,17 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		user := &User{
-			Token: r.Header.Get("Cookie"),
-			Score: 0,
+		user, exist := UserTable.GetUser(r.Header.Get("Cookie"))
+		if !exist {
+			user = &User{
+				Token: r.Header.Get("Cookie"),
+				Score: 0,
+			}
+			UserTable.AddUser(r.Header.Get("Cookie"), user)
 		}
+		var wsResponse map[string]interface{}
 
 		if !user.CorrectAnswer {
-			var wsResponse map[string]interface{}
 			err := json.Unmarshal(message, &wsResponse)
 			if err != nil {
 				log.Println("Error parsing message:", err)
@@ -101,8 +105,12 @@ func DeaftestWs(w http.ResponseWriter, r *http.Request) {
 			SendMessage(response, conn)
 		}
 
-		if string(message) == "Change_song" {
-			NextMusic(&currentMusic, &music, ws.Rooms[roomID])
+		serverResponse, resp := wsResponse["answer"].(string)
+		if !resp {
+			println("Error getting data from message:", wsResponse)
+		}
+		if serverResponse == "Change_song" {
+			NextMusic(&currentMusic, &music)
 		}
 	}
 }
