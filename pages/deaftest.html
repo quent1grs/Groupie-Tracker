@@ -7,15 +7,22 @@
         <link rel="stylesheet" href="assets/css/deaftest.css">
     </head>
     <body>
-        <p id="countdown">0</p>
-        <p id="Lyrics">0</p>
+        <div id="chat" style="border: black solid 2px;"></div>
+        <div id="chat-controls" style="clear: both;">
+            <button id="sendtextchat">Send</button>    
+            <input type="text" id="textchat">
+        </div>
+        
         <div class="game">
+            <p id="countdown">0</p>
+            <p id="Lyrics">0</p>
             <form method="POST" class="post">
                 <input type="text" name="deaftest_answer" placeholder="Enter the song name">
                 <button type="submit">Submit</button>
             </form>
+            <p id="previous">Previous song: </p>
         </div>
-        <p id="previous">Previous song: </p>
+        
     </body>
     <script src="assets/JS/deaftest.js"></script>
 </html>

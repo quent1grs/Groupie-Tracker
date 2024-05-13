@@ -1,3 +1,43 @@
+var ws = new WebSocket('ws://localhost:8080/chatdeaftestws');
+
+function sendMessage() {
+    var data = {
+        "message": document.getElementById("textchat").value,
+        // "username": ,
+    };
+    ws.send(JSON.stringify(data));
+    document.getElementById("textchat").value = ""; // Effacez le contenu de l'input
+}
+
+ws.onmessage = (e) => {
+    document.getElementById("chat").innerHTML += e.data + "<br>";
+};
+
+ws.onerror = (e) => {
+    console.log(e);
+};
+
+ws.onclose = () => {
+    delete ws;
+};
+
+ws.onopen = () => {
+    console.log("Chat Connected");
+    var sendButton = document.getElementById("sendtextchat");
+    var textInput = document.getElementById("textchat");
+
+    sendButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        sendMessage();
+    });
+
+    textInput.addEventListener("keypress", (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+};
 window.onload = function() {
     var conn = new WebSocket('ws://localhost:8080/deaftestws');
     console.log(conn);
@@ -32,33 +72,41 @@ window.onload = function() {
             lyrics.innerText = "Title: " + data.Title + " by " + data.Artist;
         }
 
-        timer = 30;
-        if (intervalId) {
-            clearInterval(intervalId);
-        }
-
-        intervalId = setInterval(function() {
-            timer--;
-            countdown.innerText = timer;
-            if (timer === 0) {
+        if (data.Lyrics || (data.Title && data.Artist)) {
+            timer = 30;
+            if (intervalId) {
                 clearInterval(intervalId);
-                previous.innerText = "Previous song: " + data.Title + " by " + data.Artist;
-                conn.send('Change_song');
             }
-        }, 1000);
+
+            intervalId = setInterval(function() {
+                timer--;
+                countdown.innerText = timer;
+                if (timer === 0) {
+                    clearInterval(intervalId);
+                    previous.innerText = "Previous song: " + data.Title + " by " + data.Artist;
+                    var message = {
+                        answer: 'Change_song',
+                        remainingTime: 0,
+                    };
+                    conn.send(JSON.stringify(message));
+                }
+            }, 1000);
+        }
     };
 
     document.querySelector('form').addEventListener('submit', function(e) {
         e.preventDefault();
         if (conn.readyState === WebSocket.OPEN) {
             remainingTime = parseInt(document.getElementById('countdown').innerText, 10);
-            var answer = document.querySelector('input[name="deaftest_answer"]').value;
+            var answerInput = document.querySelector('input[name="deaftest_answer"]');
+            var answer = answerInput.value;
             if (typeof answer === 'string') {
                 var message = {
                     answer: answer,
                     remainingTime: remainingTime,
                 };
                 conn.send(JSON.stringify(message));
+                answerInput.value = '';
             } else {
                 console.error('Answer is not a string:', answer);
             }
